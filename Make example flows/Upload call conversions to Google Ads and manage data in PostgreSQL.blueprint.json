@@ -1,0 +1,527 @@
+{
+    "name": "Upload call conversions to Google Ads and manage data in PostgreSQL",
+    "flow": [
+        {
+            "id": 1,
+            "module": "postgres:SelectFromTable",
+            "version": 2,
+            "parameters": {
+                "continueWhenNoRes": false,
+                "isToManageDataInSharedTransaction": true
+            },
+            "mapper": {
+                "sort": [],
+                "limit": ""
+            },
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                },
+                "restore": {},
+                "parameters": [
+                    {
+                        "name": "account",
+                        "type": "account:postgres",
+                        "label": "Connection",
+                        "required": true
+                    },
+                    {
+                        "name": "continueWhenNoRes",
+                        "type": "boolean",
+                        "label": "Continue the execution of the route even if the module returns no rows",
+                        "required": true
+                    },
+                    {
+                        "name": "isToManageDataInSharedTransaction",
+                        "type": "boolean",
+                        "label": "Manage data within the shared transaction",
+                        "required": true
+                    },
+                    {
+                        "name": "table",
+                        "type": "select",
+                        "label": "Table",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "where",
+                        "type": "filter",
+                        "label": "Filter",
+                        "options": {
+                            "store": [
+                                {
+                                    "label": "id",
+                                    "value": "id"
+                                },
+                                {
+                                    "label": "name",
+                                    "value": "name"
+                                },
+                                {
+                                    "label": "balance",
+                                    "value": "balance"
+                                }
+                            ],
+                            "operators": [
+                                {
+                                    "label": "Basic",
+                                    "options": [
+                                        {
+                                            "label": "Is not null",
+                                            "value": "exist"
+                                        },
+                                        {
+                                            "label": "Is null",
+                                            "value": "notexist"
+                                        },
+                                        {
+                                            "label": "Equal to",
+                                            "value": "equal"
+                                        },
+                                        {
+                                            "label": "Not equal to",
+                                            "value": "notequal"
+                                        },
+                                        {
+                                            "label": "Greater than",
+                                            "value": "greater"
+                                        },
+                                        {
+                                            "label": "Greater than or equal to",
+                                            "value": "greaterorequal"
+                                        },
+                                        {
+                                            "label": "Less than",
+                                            "value": "less"
+                                        },
+                                        {
+                                            "label": "Less than or equal to",
+                                            "value": "lessorequal"
+                                        },
+                                        {
+                                            "label": "Contains",
+                                            "value": "contain"
+                                        },
+                                        {
+                                            "label": "Does not contain",
+                                            "value": "notcontain"
+                                        },
+                                        {
+                                            "label": "Starts with",
+                                            "value": "startwith"
+                                        },
+                                        {
+                                            "label": "Does not start with",
+                                            "value": "notstartwith"
+                                        },
+                                        {
+                                            "label": "Ends with",
+                                            "value": "endwith"
+                                        },
+                                        {
+                                            "label": "Does not end with",
+                                            "value": "notendwith"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "spec": [
+                            {
+                                "name": "column",
+                                "type": "select",
+                                "label": "Column",
+                                "dynamic": true,
+                                "options": [],
+                                "required": true
+                            },
+                            {
+                                "name": "order",
+                                "type": "select",
+                                "label": "Order",
+                                "options": [
+                                    {
+                                        "label": "Ascending",
+                                        "value": "asc"
+                                    },
+                                    {
+                                        "label": "Descending",
+                                        "value": "desc"
+                                    }
+                                ],
+                                "required": true
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Sort"
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "__IMTLENGTH__",
+                        "type": "uinteger",
+                        "label": "Total number of bundles"
+                    },
+                    {
+                        "name": "__IMTINDEX__",
+                        "type": "uinteger",
+                        "label": "Bundle order position"
+                    },
+                    {
+                        "name": "id",
+                        "type": "integer",
+                        "label": "id",
+                        "required": false
+                    },
+                    {
+                        "name": "name",
+                        "type": "text",
+                        "label": "name",
+                        "required": false
+                    },
+                    {
+                        "name": "balance",
+                        "type": "number",
+                        "label": "balance",
+                        "required": false
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "module": "google-ads-conversions:uploadACallCoversion",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "select": "list",
+                "consent": {},
+                "callerId": "{{1.customer_phone_number}}",
+                "clientId": "9657257562",
+                "currencyCode": "{{1.currency_code}}",
+                "conversionValue": "{{1.conversion_value}}",
+                "customVariables": {},
+                "conversionAction": "id",
+                "callStartDateTime": "{{formatDate(parseDate(substring(1.call_start_date_time; 0; 14); \"YYYYMMDDHHmmss\"); \"YYYY-MM-DD HH:mm:ss\")}}-03:00",
+                "conversionDateTime": "{{formatDate(parseDate(substring(1.conversion_date_time; 0; 14); \"YYYYMMDDHHmmss\"); \"YYYY-MM-DD HH:mm:ss\")}}-03:00"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "consent": {
+                            "nested": {
+                                "ad_user_data": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                },
+                                "ad_personalization": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                }
+                            }
+                        },
+                        "clientId": {
+                            "label": " (965-725-7562)"
+                        },
+                        "conversionAction": {
+                            "mode": "edit"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-ads2"
+                            },
+                            "label": "My Google Ads connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-ads2",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Upload a Call Conversion",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "list"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "clientId",
+                        "type": "select",
+                        "label": "Account/Customer ID",
+                        "required": true
+                    },
+                    {
+                        "name": "conversionAction",
+                        "type": "select",
+                        "label": "Conversion Action ID",
+                        "required": true
+                    },
+                    {
+                        "name": "callerId",
+                        "type": "text",
+                        "label": "Customer Phone Number",
+                        "required": true
+                    },
+                    {
+                        "name": "callStartDateTime",
+                        "type": "date",
+                        "label": "Call Start Date Time",
+                        "required": true
+                    },
+                    {
+                        "name": "conversionDateTime",
+                        "type": "date",
+                        "label": "Conversion Date Time",
+                        "required": true
+                    },
+                    {
+                        "name": "conversionValue",
+                        "type": "number",
+                        "label": "Conversion Value",
+                        "required": true
+                    },
+                    {
+                        "name": "currencyCode",
+                        "type": "text",
+                        "label": "Currency Code",
+                        "required": true
+                    },
+                    {
+                        "name": "customVariables",
+                        "spec": [],
+                        "type": "collection",
+                        "label": "Custom Variables"
+                    },
+                    {
+                        "name": "consent",
+                        "spec": [
+                            {
+                                "name": "ad_user_data",
+                                "type": "select",
+                                "label": "Ad User Data",
+                                "validate": {
+                                    "enum": [
+                                        "UNSPECIFIED",
+                                        "GRANTED",
+                                        "DENIED"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "ad_personalization",
+                                "type": "select",
+                                "label": "Ad Personalization",
+                                "validate": {
+                                    "enum": [
+                                        "UNSPECIFIED",
+                                        "GRANTED",
+                                        "DENIED"
+                                    ]
+                                }
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Consent"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 3,
+            "module": "postgres:DeleteFromTable",
+            "version": 2,
+            "parameters": {
+                "table": "\"public\".\"accounts\"",
+                "isToManageDataInSharedTransaction": true
+            },
+            "mapper": {
+                "where": [
+                    [
+                        {
+                            "a": "id"
+                        }
+                    ]
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0
+                },
+                "restore": {
+                    "parameters": {
+                        "table": {
+                            "label": "public.accounts"
+                        },
+                        "account": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "postgres"
+                            },
+                            "label": "My PostgreSQL connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "account",
+                        "type": "account:postgres",
+                        "label": "Connection",
+                        "required": true
+                    },
+                    {
+                        "name": "isToManageDataInSharedTransaction",
+                        "type": "boolean",
+                        "label": "Manage data within the shared transaction",
+                        "required": true
+                    },
+                    {
+                        "name": "table",
+                        "type": "select",
+                        "label": "Table",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "where",
+                        "type": "filter",
+                        "label": "Filter",
+                        "options": {
+                            "store": [
+                                {
+                                    "label": "id",
+                                    "value": "id"
+                                },
+                                {
+                                    "label": "name",
+                                    "value": "name"
+                                },
+                                {
+                                    "label": "balance",
+                                    "value": "balance"
+                                }
+                            ],
+                            "operators": [
+                                {
+                                    "label": "Basic",
+                                    "options": [
+                                        {
+                                            "label": "Is not null",
+                                            "value": "exist"
+                                        },
+                                        {
+                                            "label": "Is null",
+                                            "value": "notexist"
+                                        },
+                                        {
+                                            "label": "Equal to",
+                                            "value": "equal"
+                                        },
+                                        {
+                                            "label": "Not equal to",
+                                            "value": "notequal"
+                                        },
+                                        {
+                                            "label": "Greater than",
+                                            "value": "greater"
+                                        },
+                                        {
+                                            "label": "Greater than or equal to",
+                                            "value": "greaterorequal"
+                                        },
+                                        {
+                                            "label": "Less than",
+                                            "value": "less"
+                                        },
+                                        {
+                                            "label": "Less than or equal to",
+                                            "value": "lessorequal"
+                                        },
+                                        {
+                                            "label": "Contains",
+                                            "value": "contain"
+                                        },
+                                        {
+                                            "label": "Does not contain",
+                                            "value": "notcontain"
+                                        },
+                                        {
+                                            "label": "Starts with",
+                                            "value": "startwith"
+                                        },
+                                        {
+                                            "label": "Does not start with",
+                                            "value": "notstartwith"
+                                        },
+                                        {
+                                            "label": "Ends with",
+                                            "value": "endwith"
+                                        },
+                                        {
+                                            "label": "Does not end with",
+                                            "value": "notendwith"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}

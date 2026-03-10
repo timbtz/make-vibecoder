@@ -1,0 +1,965 @@
+{
+    "name": "Add new SalesForce accounts to QuickBooks as customers",
+    "flow": [
+        {
+            "id": 1,
+            "module": "salesforce:TriggerNewObject",
+            "version": 2,
+            "parameters": {
+                "watch": "onlyNew",
+                "sObject": "Account",
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": -235,
+                    "y": -1
+                },
+                "restore": {
+                    "watch": {
+                        "label": "Only new objects"
+                    },
+                    "sObject": {
+                        "label": "Account"
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "account",
+                        "type": "account",
+                        "label": "Connection",
+                        "required": true
+                    },
+                    {
+                        "name": "watch",
+                        "type": "select",
+                        "label": "Watch",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "onlyNew",
+                                "allChanges"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sObject",
+                        "type": "select",
+                        "label": "Type",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "uinteger",
+                        "label": "Maximal count of objects",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "description",
+                        "type": "text",
+                        "label": "Account Description"
+                    },
+                    {
+                        "name": "fax",
+                        "type": "text",
+                        "label": "Account Fax"
+                    },
+                    {
+                        "name": "id",
+                        "type": "text",
+                        "label": "Account ID"
+                    },
+                    {
+                        "name": "name",
+                        "type": "text",
+                        "label": "Account Name"
+                    },
+                    {
+                        "name": "accountNumber",
+                        "type": "text",
+                        "label": "Account Number"
+                    },
+                    {
+                        "name": "phone",
+                        "type": "text",
+                        "label": "Account Phone"
+                    },
+                    {
+                        "name": "rating",
+                        "type": "text",
+                        "label": "Account Rating"
+                    },
+                    {
+                        "name": "site",
+                        "type": "text",
+                        "label": "Account Site"
+                    },
+                    {
+                        "name": "accountSource",
+                        "type": "text",
+                        "label": "Account Source"
+                    },
+                    {
+                        "name": "type",
+                        "type": "text",
+                        "label": "Account Type"
+                    },
+                    {
+                        "name": "active__c",
+                        "type": "text",
+                        "label": "Active"
+                    },
+                    {
+                        "name": "annualRevenue",
+                        "type": "number",
+                        "label": "Annual Revenue"
+                    },
+                    {
+                        "name": "billingAddress",
+                        "spec": [
+                            {
+                                "name": "street",
+                                "type": "text",
+                                "label": "Street"
+                            },
+                            {
+                                "name": "country",
+                                "type": "text",
+                                "label": "Country"
+                            },
+                            {
+                                "name": "countryCode",
+                                "type": "text",
+                                "label": "Country code"
+                            },
+                            {
+                                "name": "latitude",
+                                "type": "number",
+                                "label": "Latitude"
+                            },
+                            {
+                                "name": "longitude",
+                                "type": "number",
+                                "label": "Longitude"
+                            },
+                            {
+                                "name": "postalCode",
+                                "type": "text",
+                                "label": "Postal code"
+                            },
+                            {
+                                "name": "state",
+                                "type": "text",
+                                "label": "State"
+                            },
+                            {
+                                "name": "stateCode",
+                                "type": "text",
+                                "label": "State code"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Billing Address"
+                    },
+                    {
+                        "name": "billingCity",
+                        "type": "text",
+                        "label": "Billing City"
+                    },
+                    {
+                        "name": "billingCountry",
+                        "type": "text",
+                        "label": "Billing Country"
+                    },
+                    {
+                        "name": "billingLatitude",
+                        "type": "number",
+                        "label": "Billing Latitude"
+                    },
+                    {
+                        "name": "billingLongitude",
+                        "type": "number",
+                        "label": "Billing Longitude"
+                    },
+                    {
+                        "name": "billingState",
+                        "type": "text",
+                        "label": "Billing State/Province"
+                    },
+                    {
+                        "name": "billingStreet",
+                        "type": "text",
+                        "label": "Billing Street"
+                    },
+                    {
+                        "name": "billingPostalCode",
+                        "type": "text",
+                        "label": "Billing Zip/Postal Code"
+                    },
+                    {
+                        "name": "cleanStatus",
+                        "type": "text",
+                        "label": "Clean Status"
+                    },
+                    {
+                        "name": "createdById",
+                        "type": "text",
+                        "label": "Created By ID"
+                    },
+                    {
+                        "name": "createdDate",
+                        "type": "date",
+                        "label": "Created Date"
+                    },
+                    {
+                        "name": "customerPriority__c",
+                        "type": "text",
+                        "label": "Customer Priority"
+                    },
+                    {
+                        "name": "dunsNumber",
+                        "type": "text",
+                        "label": "D-U-N-S Number"
+                    },
+                    {
+                        "name": "dandbCompanyId",
+                        "type": "text",
+                        "label": "D&B Company ID"
+                    },
+                    {
+                        "name": "jigsaw",
+                        "type": "text",
+                        "label": "Data.com Key"
+                    },
+                    {
+                        "name": "isDeleted",
+                        "type": "boolean",
+                        "label": "Deleted"
+                    },
+                    {
+                        "name": "numberOfEmployees",
+                        "type": "number",
+                        "label": "Employees"
+                    },
+                    {
+                        "name": "industry",
+                        "type": "text",
+                        "label": "Industry"
+                    },
+                    {
+                        "name": "jigsawCompanyId",
+                        "type": "text",
+                        "label": "Jigsaw Company ID"
+                    },
+                    {
+                        "name": "lastActivityDate",
+                        "type": "date",
+                        "label": "Last Activity"
+                    },
+                    {
+                        "name": "lastModifiedById",
+                        "type": "text",
+                        "label": "Last Modified By ID"
+                    },
+                    {
+                        "name": "lastModifiedDate",
+                        "type": "date",
+                        "label": "Last Modified Date"
+                    },
+                    {
+                        "name": "lastReferencedDate",
+                        "type": "date",
+                        "label": "Last Referenced Date"
+                    },
+                    {
+                        "name": "lastViewedDate",
+                        "type": "date",
+                        "label": "Last Viewed Date"
+                    },
+                    {
+                        "name": "masterRecordId",
+                        "type": "text",
+                        "label": "Master Record ID"
+                    },
+                    {
+                        "name": "naicsCode",
+                        "type": "text",
+                        "label": "NAICS Code"
+                    },
+                    {
+                        "name": "naicsDesc",
+                        "type": "text",
+                        "label": "NAICS Description"
+                    },
+                    {
+                        "name": "numberofLocations__c",
+                        "type": "number",
+                        "label": "Number of Locations"
+                    },
+                    {
+                        "name": "ownerId",
+                        "type": "text",
+                        "label": "Owner ID"
+                    },
+                    {
+                        "name": "ownership",
+                        "type": "text",
+                        "label": "Ownership"
+                    },
+                    {
+                        "name": "parentId",
+                        "type": "text",
+                        "label": "Parent Account ID"
+                    },
+                    {
+                        "name": "photoUrl",
+                        "type": "url",
+                        "label": "Photo URL"
+                    },
+                    {
+                        "name": "recordTypeId",
+                        "type": "text",
+                        "label": "Record Type ID"
+                    },
+                    {
+                        "name": "shippingAddress",
+                        "spec": [
+                            {
+                                "name": "street",
+                                "type": "text",
+                                "label": "Street"
+                            },
+                            {
+                                "name": "country",
+                                "type": "text",
+                                "label": "Country"
+                            },
+                            {
+                                "name": "countryCode",
+                                "type": "text",
+                                "label": "Country code"
+                            },
+                            {
+                                "name": "latitude",
+                                "type": "number",
+                                "label": "Latitude"
+                            },
+                            {
+                                "name": "longitude",
+                                "type": "number",
+                                "label": "Longitude"
+                            },
+                            {
+                                "name": "postalCode",
+                                "type": "text",
+                                "label": "Postal code"
+                            },
+                            {
+                                "name": "state",
+                                "type": "text",
+                                "label": "State"
+                            },
+                            {
+                                "name": "stateCode",
+                                "type": "text",
+                                "label": "State code"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Shipping Address"
+                    },
+                    {
+                        "name": "shippingCity",
+                        "type": "text",
+                        "label": "Shipping City"
+                    },
+                    {
+                        "name": "shippingCountry",
+                        "type": "text",
+                        "label": "Shipping Country"
+                    },
+                    {
+                        "name": "shippingLatitude",
+                        "type": "number",
+                        "label": "Shipping Latitude"
+                    },
+                    {
+                        "name": "shippingLongitude",
+                        "type": "number",
+                        "label": "Shipping Longitude"
+                    },
+                    {
+                        "name": "shippingState",
+                        "type": "text",
+                        "label": "Shipping State/Province"
+                    },
+                    {
+                        "name": "shippingStreet",
+                        "type": "text",
+                        "label": "Shipping Street"
+                    },
+                    {
+                        "name": "shippingPostalCode",
+                        "type": "text",
+                        "label": "Shipping Zip/Postal Code"
+                    },
+                    {
+                        "name": "sic",
+                        "type": "text",
+                        "label": "SIC Code"
+                    },
+                    {
+                        "name": "sicDesc",
+                        "type": "text",
+                        "label": "SIC Description"
+                    },
+                    {
+                        "name": "sLA__c",
+                        "type": "text",
+                        "label": "SLA"
+                    },
+                    {
+                        "name": "sLAExpirationDate__c",
+                        "type": "date",
+                        "label": "SLA Expiration Date"
+                    },
+                    {
+                        "name": "sLASerialNumber__c",
+                        "type": "text",
+                        "label": "SLA Serial Number"
+                    },
+                    {
+                        "name": "systemModstamp",
+                        "type": "date",
+                        "label": "System Modstamp"
+                    },
+                    {
+                        "name": "tickerSymbol",
+                        "type": "text",
+                        "label": "Ticker Symbol"
+                    },
+                    {
+                        "name": "tradestyle",
+                        "type": "text",
+                        "label": "Tradestyle"
+                    },
+                    {
+                        "name": "upsellOpportunity__c",
+                        "type": "text",
+                        "label": "Upsell Opportunity"
+                    },
+                    {
+                        "name": "website",
+                        "type": "url",
+                        "label": "Website"
+                    },
+                    {
+                        "name": "yearStarted",
+                        "type": "text",
+                        "label": "Year Started"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "module": "quickbooks:CreateCustomer",
+            "version": 2,
+            "parameters": {},
+            "mapper": {
+                "BillAddr": {
+                    "City": "{{1.billingCity}}",
+                    "Line1": "{{1.billingStreet}}",
+                    "Country": "{{1.billingCountry}}",
+                    "PostalCode": "{{1.billingPostalCode}}"
+                },
+                "ShipAddr": {
+                    "City": "{{1.shippingCity}}",
+                    "Line1": "{{1.shippingStreet}}",
+                    "Country": "{{1.shippingCountry}}",
+                    "PostalCode": "{{1.shippingPostalCode}}"
+                },
+                "DisplayName": "{{1.name}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 65,
+                    "y": -1
+                },
+                "restore": {
+                    "Job": {
+                        "mode": "chose"
+                    },
+                    "ParentRef": {
+                        "mode": "chose",
+                        "label": ""
+                    },
+                    "SalesTermRef": {
+                        "mode": "chose",
+                        "label": ""
+                    },
+                    "BillWithParent": {
+                        "mode": "chose"
+                    },
+                    "PaymentMethodRef": {
+                        "mode": "chose",
+                        "label": ""
+                    },
+                    "DefaultTaxCodeRef": {
+                        "mode": "chose",
+                        "label": ""
+                    },
+                    "PreferredDeliveryMethod": {
+                        "mode": "chose",
+                        "label": ""
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "DisplayName",
+                        "type": "text",
+                        "label": "Display name"
+                    },
+                    {
+                        "name": "GivenName",
+                        "type": "text",
+                        "label": "Given name"
+                    },
+                    {
+                        "name": "MiddleName",
+                        "type": "text",
+                        "label": "Middle name"
+                    },
+                    {
+                        "name": "FamilyName",
+                        "type": "text",
+                        "label": "Family name"
+                    },
+                    {
+                        "name": "Title",
+                        "type": "text"
+                    },
+                    {
+                        "name": "Suffix",
+                        "type": "text"
+                    },
+                    {
+                        "name": "CompanyName",
+                        "type": "text",
+                        "label": "Company name"
+                    },
+                    {
+                        "name": "PrimaryEmailAddr",
+                        "type": "email",
+                        "label": "Email"
+                    },
+                    {
+                        "name": "BillAddr",
+                        "spec": [
+                            {
+                                "name": "Line1",
+                                "type": "text",
+                                "label": "Line 1"
+                            },
+                            {
+                                "name": "Line2",
+                                "type": "text",
+                                "label": "Line 2"
+                            },
+                            {
+                                "name": "City",
+                                "type": "text"
+                            },
+                            {
+                                "name": "PostalCode",
+                                "type": "text",
+                                "label": "Postal code"
+                            },
+                            {
+                                "name": "CountrySubDivisionCode",
+                                "type": "text",
+                                "label": "Country sub division code"
+                            },
+                            {
+                                "name": "Country",
+                                "type": "text"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Billing address",
+                        "required": false
+                    },
+                    {
+                        "name": "ShipAddr",
+                        "spec": [
+                            {
+                                "name": "Line1",
+                                "type": "text",
+                                "label": "Line 1"
+                            },
+                            {
+                                "name": "Line2",
+                                "type": "text",
+                                "label": "Line 2"
+                            },
+                            {
+                                "name": "City",
+                                "type": "text"
+                            },
+                            {
+                                "name": "PostalCode",
+                                "type": "text",
+                                "label": "Postal code"
+                            },
+                            {
+                                "name": "CountrySubDivisionCode",
+                                "type": "text",
+                                "label": "Country sub division code"
+                            },
+                            {
+                                "name": "Country",
+                                "type": "text"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Shipping address",
+                        "required": false
+                    },
+                    {
+                        "name": "WebAddr",
+                        "type": "url",
+                        "label": "Web"
+                    },
+                    {
+                        "name": "PrimaryPhone",
+                        "type": "text",
+                        "label": "Phone"
+                    },
+                    {
+                        "name": "AlternatePhone",
+                        "type": "text",
+                        "label": "Alternate phone"
+                    },
+                    {
+                        "name": "Mobile",
+                        "type": "text"
+                    },
+                    {
+                        "name": "Fax",
+                        "type": "text"
+                    },
+                    {
+                        "name": "Notes",
+                        "type": "text",
+                        "label": "Note"
+                    },
+                    {
+                        "name": "CurrencyRef",
+                        "type": "text",
+                        "label": "Currency"
+                    },
+                    {
+                        "name": "ParentRef",
+                        "type": "select",
+                        "label": "Parent"
+                    },
+                    {
+                        "name": "Job",
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "BillWithParent",
+                        "type": "boolean",
+                        "label": "Bill with parent"
+                    },
+                    {
+                        "name": "ResaleNum",
+                        "type": "text",
+                        "label": "Resale number"
+                    },
+                    {
+                        "name": "PrintOnCheckName",
+                        "type": "text",
+                        "label": "Print on check name"
+                    },
+                    {
+                        "name": "Balance",
+                        "type": "number"
+                    },
+                    {
+                        "name": "BalanceWithJobs",
+                        "type": "number",
+                        "label": "Balance with jobs"
+                    },
+                    {
+                        "name": "PaymentMethodRef",
+                        "type": "select",
+                        "label": "Payment method"
+                    },
+                    {
+                        "name": "SalesTermRef",
+                        "type": "select",
+                        "label": "Sales terms"
+                    },
+                    {
+                        "name": "PreferredDeliveryMethod",
+                        "type": "select",
+                        "label": "Preferred delivery method",
+                        "validate": {
+                            "enum": [
+                                "Print",
+                                "Email"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "DefaultTaxCodeRef",
+                        "type": "select",
+                        "label": "Default tax code"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "Id",
+                        "type": "number",
+                        "label": "Customer  ID"
+                    },
+                    {
+                        "name": "PrimaryEmailAddr",
+                        "spec": [
+                            {
+                                "name": "Address",
+                                "type": "text",
+                                "label": "Address"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Primary email"
+                    },
+                    {
+                        "name": "DisplayName",
+                        "type": "text",
+                        "label": "Display name"
+                    },
+                    {
+                        "name": "CurrencyRef",
+                        "spec": [
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Name"
+                            },
+                            {
+                                "name": "value",
+                                "type": "text",
+                                "label": "Value"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Currency"
+                    },
+                    {
+                        "name": "DefaultTaxCodeRef",
+                        "spec": [
+                            {
+                                "name": "value",
+                                "type": "text",
+                                "label": "Value"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Default tax code"
+                    },
+                    {
+                        "name": "PreferredDeliveryMethod",
+                        "type": "text",
+                        "label": "Preferred delivery method"
+                    },
+                    {
+                        "name": "GivenName",
+                        "type": "text",
+                        "label": "Given name"
+                    },
+                    {
+                        "name": "FullyQualifiedName",
+                        "type": "text",
+                        "label": "Fully qualified name"
+                    },
+                    {
+                        "name": "BillWithParent",
+                        "type": "boolean",
+                        "label": "Bill with parent"
+                    },
+                    {
+                        "name": "Title",
+                        "type": "text",
+                        "label": "Title"
+                    },
+                    {
+                        "name": "Job",
+                        "type": "boolean",
+                        "label": "Job"
+                    },
+                    {
+                        "name": "BalanceWithJobs",
+                        "type": "number",
+                        "label": "Balance with jobs"
+                    },
+                    {
+                        "name": "PrimaryPhone",
+                        "spec": [
+                            {
+                                "name": "FreeFormNumber",
+                                "type": "text",
+                                "label": "Free form number"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Primary phone"
+                    },
+                    {
+                        "name": "Taxable",
+                        "type": "boolean",
+                        "label": "Taxable"
+                    },
+                    {
+                        "name": "MetaData",
+                        "spec": [
+                            {
+                                "name": "CreateTime",
+                                "type": "text",
+                                "label": "Create time"
+                            },
+                            {
+                                "name": "LastUpdatedTime",
+                                "type": "text",
+                                "label": "Last updated time"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Meta data"
+                    },
+                    {
+                        "name": "BillAddr",
+                        "spec": [
+                            {
+                                "name": "City",
+                                "type": "text",
+                                "label": "City"
+                            },
+                            {
+                                "name": "Country",
+                                "type": "text",
+                                "label": "Country"
+                            },
+                            {
+                                "name": "Line1",
+                                "type": "text",
+                                "label": "Line1"
+                            },
+                            {
+                                "name": "Line2",
+                                "type": "text",
+                                "label": "Line2"
+                            },
+                            {
+                                "name": "PostalCode",
+                                "type": "text",
+                                "label": "Postal code"
+                            },
+                            {
+                                "name": "CountrySubDivisionCode",
+                                "type": "text",
+                                "label": "Country sub division code"
+                            },
+                            {
+                                "name": "Id",
+                                "type": "text",
+                                "label": "Id"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Bill addr"
+                    },
+                    {
+                        "name": "MiddleName",
+                        "type": "text",
+                        "label": "Middle name"
+                    },
+                    {
+                        "name": "Notes",
+                        "type": "text",
+                        "label": "Notes"
+                    },
+                    {
+                        "name": "Active",
+                        "type": "boolean",
+                        "label": "Active"
+                    },
+                    {
+                        "name": "Balance",
+                        "type": "number",
+                        "label": "Balance"
+                    },
+                    {
+                        "name": "SyncToken",
+                        "type": "text",
+                        "label": "Sync token"
+                    },
+                    {
+                        "name": "Suffix",
+                        "type": "text",
+                        "label": "Suffix"
+                    },
+                    {
+                        "name": "CompanyName",
+                        "type": "text",
+                        "label": "Company name"
+                    },
+                    {
+                        "name": "FamilyName",
+                        "type": "text",
+                        "label": "Family name"
+                    },
+                    {
+                        "name": "PrintOnCheckName",
+                        "type": "text",
+                        "label": "Print on check name"
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}

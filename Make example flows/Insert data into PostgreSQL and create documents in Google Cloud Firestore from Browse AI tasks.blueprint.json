@@ -1,0 +1,84 @@
+{
+    "name": "Insert data into PostgreSQL and create documents in Google Cloud Firestore from Browse AI tasks",
+    "flow": [
+        {
+            "id": 1,
+            "module": "browse-ai:onTaskFinished",
+            "version": 1,
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "id": 2,
+            "module": "postgres:InsertIntoTable",
+            "version": 2,
+            "mapper": {
+                "@created_at": "{{now}}",
+                "@updated_date": "{{1.task.capturedTexts.updatedDate}}",
+                "@merchant_buys": "{{1.task.capturedTexts.bank_buys}}",
+                "@merchant_sells": "{{1.task.capturedTexts.bank_sells}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "id": 3,
+            "module": "google-cloud-firestore:createDocument",
+            "version": 1,
+            "mapper": {
+                "fields": [
+                    {
+                        "value": "{{1.task.capturedTexts.bank_sells}}"
+                    },
+                    {
+                        "value": "{{1.task.capturedTexts.bank_buys}}"
+                    },
+                    {},
+                    {
+                        "value": "{{now}}"
+                    },
+                    {},
+                    {
+                        "value": "{{1.task.capturedTexts.updatedDate}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 0
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}

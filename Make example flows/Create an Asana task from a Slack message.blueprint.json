@@ -1,0 +1,736 @@
+{
+    "name": "Create an Asana task from a Slack message",
+    "flow": [
+        {
+            "id": 11,
+            "module": "slack:NewEvent",
+            "version": 4,
+            "parameters": {},
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 150
+                },
+                "restore": {},
+                "parameters": [
+                    {
+                        "name": "__IMTHOOK__",
+                        "type": "hook",
+                        "label": "Webhook",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "module": "regexp:Parser",
+            "version": 1,
+            "parameters": {
+                "global": true,
+                "pattern": "\\+task:\\s?(.+)\\s\\+project:\\s?(.+)|\\+task:\\s?(.+)",
+                "multiline": true,
+                "sensitive": false,
+                "singleline": false,
+                "continueWhenNoRes": false
+            },
+            "filter": {
+                "name": "message starts with +task",
+                "conditions": [
+                    [
+                        {
+                            "a": "{{11.text}}",
+                            "b": "+task",
+                            "o": "text:startwith"
+                        }
+                    ]
+                ]
+            },
+            "mapper": {
+                "text": "{{11.text}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 150
+                },
+                "parameters": [
+                    {
+                        "name": "pattern",
+                        "type": "text",
+                        "label": "Pattern",
+                        "required": true
+                    },
+                    {
+                        "name": "global",
+                        "type": "boolean",
+                        "label": "Global match",
+                        "required": true
+                    },
+                    {
+                        "name": "sensitive",
+                        "type": "boolean",
+                        "label": "Case sensitive",
+                        "required": true
+                    },
+                    {
+                        "name": "multiline",
+                        "type": "boolean",
+                        "label": "Multiline",
+                        "required": true
+                    },
+                    {
+                        "name": "singleline",
+                        "type": "boolean",
+                        "label": "Singleline",
+                        "required": true
+                    },
+                    {
+                        "name": "continueWhenNoRes",
+                        "type": "boolean",
+                        "label": "Continue the execution of the route even if the module finds no matches",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "text",
+                        "type": "text",
+                        "label": "Text"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "$1",
+                        "type": "text",
+                        "label": "$1"
+                    },
+                    {
+                        "name": "$2",
+                        "type": "text",
+                        "label": "$2"
+                    },
+                    {
+                        "name": "$3",
+                        "type": "text",
+                        "label": "$3"
+                    },
+                    {
+                        "name": "i",
+                        "type": "uinteger",
+                        "label": "i"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 9,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "mapper": null,
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 150
+                }
+            },
+            "routes": [
+                {
+                    "flow": [
+                        {
+                            "id": 10,
+                            "module": "asana:CreateTask",
+                            "version": 2,
+                            "parameters": {},
+                            "filter": {
+                                "name": "project not specified",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{6.`$3`}}",
+                                            "b": "",
+                                            "o": "exist"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "name": "{{6.`$3`}}",
+                                "external": {},
+                                "ignoreMe": "no",
+                                "destination": "projects",
+                                "ignoreMeTwo": "no"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 900,
+                                    "y": 0
+                                },
+                                "restore": {
+                                    "due": {
+                                        "mode": "chose",
+                                        "label": ""
+                                    },
+                                    "tags": {
+                                        "mode": "chose"
+                                    },
+                                    "liked": {
+                                        "mode": "chose"
+                                    },
+                                    "ignoreMe": {
+                                        "mode": "chose",
+                                        "label": "No"
+                                    },
+                                    "completed": {
+                                        "mode": "chose"
+                                    },
+                                    "followers": {
+                                        "mode": "chose",
+                                        "items": []
+                                    },
+                                    "destination": {
+                                        "mode": "chose",
+                                        "label": "Projects"
+                                    },
+                                    "ignoreMeTwo": {
+                                        "mode": "chose",
+                                        "label": "No"
+                                    },
+                                    "workspaceAlt": {
+                                        "mode": "edit"
+                                    },
+                                    "workspaceAlt2": {
+                                        "mode": "edit"
+                                    },
+                                    "assignee_status": {
+                                        "mode": "chose",
+                                        "label": ""
+                                    },
+                                    "resource_subtype": {
+                                        "mode": "chose",
+                                        "label": ""
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "destination",
+                                        "type": "select",
+                                        "label": "Task destination",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "workspace",
+                                                "projects",
+                                                "projAndSect",
+                                                "parentTaskSelect",
+                                                "parentTaskMap"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Task Name"
+                                    },
+                                    {
+                                        "name": "notes",
+                                        "type": "text",
+                                        "label": "Notes"
+                                    },
+                                    {
+                                        "name": "html_notes",
+                                        "type": "text",
+                                        "label": "HTML Notes"
+                                    },
+                                    {
+                                        "mode": "edit",
+                                        "name": "workspaceAlt",
+                                        "type": "select",
+                                        "label": "Workspace ID"
+                                    },
+                                    {
+                                        "name": "due",
+                                        "type": "select",
+                                        "label": "Due",
+                                        "validate": {
+                                            "enum": [
+                                                "date",
+                                                "datetime"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "resource_subtype",
+                                        "type": "select",
+                                        "label": "Resource Subtype",
+                                        "validate": {
+                                            "enum": [
+                                                "approval",
+                                                "default_task",
+                                                "milestone"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "liked",
+                                        "type": "boolean",
+                                        "label": "Liked"
+                                    },
+                                    {
+                                        "name": "completed",
+                                        "type": "boolean",
+                                        "label": "Task Completed?"
+                                    },
+                                    {
+                                        "name": "external",
+                                        "spec": [
+                                            {
+                                                "name": "gid",
+                                                "type": "text",
+                                                "label": "External ID",
+                                                "validate": {
+                                                    "max": 1024
+                                                }
+                                            },
+                                            {
+                                                "name": "data",
+                                                "type": "text",
+                                                "label": "External Data"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "External"
+                                    },
+                                    {
+                                        "mode": "edit",
+                                        "name": "workspaceAlt2",
+                                        "type": "select",
+                                        "label": "Workspace ID"
+                                    },
+                                    {
+                                        "name": "tags",
+                                        "type": "select",
+                                        "label": "Tags",
+                                        "multiple": true
+                                    },
+                                    {
+                                        "name": "workspace",
+                                        "type": "select",
+                                        "label": "Workspace ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "assignee",
+                                        "type": "any",
+                                        "label": "Task Assignee ID"
+                                    },
+                                    {
+                                        "name": "assignee_status",
+                                        "type": "select",
+                                        "label": "Assignee Status",
+                                        "validate": {
+                                            "enum": [
+                                                "inbox",
+                                                "later",
+                                                "today",
+                                                "upcoming"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "followers",
+                                        "spec": {
+                                            "type": "any"
+                                        },
+                                        "type": "array",
+                                        "label": "Followers"
+                                    },
+                                    {
+                                        "name": "projects",
+                                        "type": "select",
+                                        "label": "Projects",
+                                        "multiple": true,
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "ignoreMe",
+                                        "type": "select",
+                                        "label": "Generate Workspace Custom Fields",
+                                        "validate": {
+                                            "enum": [
+                                                "no",
+                                                "yes"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "ignoreMeTwo",
+                                        "type": "select",
+                                        "label": "Generate Workspace Projects Custom Fields",
+                                        "validate": {
+                                            "enum": [
+                                                "no",
+                                                "yes"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 8,
+                            "module": "asana:ListProjects",
+                            "version": 2,
+                            "parameters": {},
+                            "filter": {
+                                "name": "project specified",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{6.`$3`}}",
+                                            "b": "",
+                                            "o": "notexist"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "page": "10"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 900,
+                                    "y": 300
+                                },
+                                "restore": {
+                                    "team": {
+                                        "mode": "edit"
+                                    },
+                                    "archived": {
+                                        "mode": "chose"
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "workspace",
+                                        "type": "select",
+                                        "label": "Workspace ID"
+                                    },
+                                    {
+                                        "name": "archived",
+                                        "type": "boolean",
+                                        "label": "Archived"
+                                    },
+                                    {
+                                        "name": "page",
+                                        "type": "uinteger",
+                                        "label": "Limit"
+                                    },
+                                    {
+                                        "name": "team",
+                                        "type": "select",
+                                        "label": "Team ID"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 3,
+                            "module": "asana:CreateTask",
+                            "version": 2,
+                            "parameters": {},
+                            "filter": {
+                                "name": "project name matches",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{8.name}}",
+                                            "b": "{{6.`$2`}}",
+                                            "o": "text:equal:ci"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "name": "{{6.`$1`}}",
+                                "external": {},
+                                "ignoreMe": "no",
+                                "projects": "{{8.gid}}",
+                                "destination": "projects",
+                                "ignoreMeTwo": "no"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1200,
+                                    "y": 300
+                                },
+                                "restore": {
+                                    "due": {
+                                        "mode": "chose",
+                                        "label": ""
+                                    },
+                                    "tags": {
+                                        "mode": "chose"
+                                    },
+                                    "liked": {
+                                        "mode": "chose"
+                                    },
+                                    "ignoreMe": {
+                                        "mode": "chose",
+                                        "label": "No"
+                                    },
+                                    "projects": {
+                                        "mode": "edit"
+                                    },
+                                    "completed": {
+                                        "mode": "chose"
+                                    },
+                                    "followers": {
+                                        "mode": "chose",
+                                        "items": []
+                                    },
+                                    "destination": {
+                                        "mode": "chose",
+                                        "label": "Projects"
+                                    },
+                                    "ignoreMeTwo": {
+                                        "mode": "chose",
+                                        "label": "No"
+                                    },
+                                    "workspaceAlt": {
+                                        "mode": "edit"
+                                    },
+                                    "workspaceAlt2": {
+                                        "mode": "edit"
+                                    },
+                                    "assignee_status": {
+                                        "mode": "chose",
+                                        "label": ""
+                                    },
+                                    "resource_subtype": {
+                                        "mode": "chose",
+                                        "label": ""
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "destination",
+                                        "type": "select",
+                                        "label": "Task destination",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "workspace",
+                                                "projects",
+                                                "projAndSect",
+                                                "parentTaskSelect",
+                                                "parentTaskMap"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Task Name"
+                                    },
+                                    {
+                                        "name": "notes",
+                                        "type": "text",
+                                        "label": "Notes"
+                                    },
+                                    {
+                                        "name": "html_notes",
+                                        "type": "text",
+                                        "label": "HTML Notes"
+                                    },
+                                    {
+                                        "mode": "edit",
+                                        "name": "workspaceAlt",
+                                        "type": "select",
+                                        "label": "Workspace ID"
+                                    },
+                                    {
+                                        "name": "due",
+                                        "type": "select",
+                                        "label": "Due",
+                                        "validate": {
+                                            "enum": [
+                                                "date",
+                                                "datetime"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "resource_subtype",
+                                        "type": "select",
+                                        "label": "Resource Subtype",
+                                        "validate": {
+                                            "enum": [
+                                                "approval",
+                                                "default_task",
+                                                "milestone"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "liked",
+                                        "type": "boolean",
+                                        "label": "Liked"
+                                    },
+                                    {
+                                        "name": "completed",
+                                        "type": "boolean",
+                                        "label": "Task Completed?"
+                                    },
+                                    {
+                                        "name": "external",
+                                        "spec": [
+                                            {
+                                                "name": "gid",
+                                                "type": "text",
+                                                "label": "External ID",
+                                                "validate": {
+                                                    "max": 1024
+                                                }
+                                            },
+                                            {
+                                                "name": "data",
+                                                "type": "text",
+                                                "label": "External Data"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "External"
+                                    },
+                                    {
+                                        "mode": "edit",
+                                        "name": "workspaceAlt2",
+                                        "type": "select",
+                                        "label": "Workspace ID"
+                                    },
+                                    {
+                                        "name": "tags",
+                                        "type": "select",
+                                        "label": "Tags",
+                                        "multiple": true
+                                    },
+                                    {
+                                        "name": "workspace",
+                                        "type": "select",
+                                        "label": "Workspace ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "assignee",
+                                        "type": "any",
+                                        "label": "Task Assignee ID"
+                                    },
+                                    {
+                                        "name": "assignee_status",
+                                        "type": "select",
+                                        "label": "Assignee Status",
+                                        "validate": {
+                                            "enum": [
+                                                "inbox",
+                                                "later",
+                                                "today",
+                                                "upcoming"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "followers",
+                                        "spec": {
+                                            "type": "any"
+                                        },
+                                        "type": "array",
+                                        "label": "Followers"
+                                    },
+                                    {
+                                        "name": "projects",
+                                        "type": "select",
+                                        "label": "Projects",
+                                        "multiple": true,
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "ignoreMe",
+                                        "type": "select",
+                                        "label": "Generate Workspace Custom Fields",
+                                        "validate": {
+                                            "enum": [
+                                                "no",
+                                                "yes"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "ignoreMeTwo",
+                                        "type": "select",
+                                        "label": "Generate Workspace Projects Custom Fields",
+                                        "validate": {
+                                            "enum": [
+                                                "no",
+                                                "yes"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}

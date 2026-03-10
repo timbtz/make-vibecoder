@@ -1,0 +1,2391 @@
+{
+    "name": "Performance Management - Reminder and Individual Performance Generation 2/3",
+    "flow": [
+        {
+            "id": 9,
+            "module": "google-drive:searchForFilesFolders",
+            "version": 4,
+            "parameters": {},
+            "mapper": {
+                "select": "list",
+                "folderId": "/17Mq4u_EsAGgtxurfz9NKIorSByx5qzVJ/1BQe45ZhSqRC1hin3L5UObw3e5KPZHWjE/1sUmAs8K6MXaUqqT6W1M8yUWsnLPIYPKH"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 300
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "folderId": {
+                            "mode": "chose",
+                            "path": [
+                                "Courses and Tutorials",
+                                "Google forms",
+                                "Google sheets"
+                            ]
+                        },
+                        "retrieve": {},
+                        "searchType": {
+                            "label": "Empty"
+                        },
+                        "destination": {}
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-restricted",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Select the Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "list"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "retrieve",
+                        "type": "select",
+                        "label": "Retrieve",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "file",
+                                "folder",
+                                "file_folder"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "searchType",
+                        "type": "select",
+                        "label": "Search",
+                        "validate": {
+                            "enum": [
+                                "title",
+                                "fulltext",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    },
+                    {
+                        "name": "destination",
+                        "type": "select",
+                        "label": "Choose a Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folderId",
+                        "type": "folder",
+                        "label": "Choose a Folder"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 12,
+            "module": "google-sheets:filterRows",
+            "version": 2,
+            "parameters": {},
+            "mapper": {
+                "from": "drive",
+                "limit": "10",
+                "filter": [
+                    [
+                        {
+                            "a": "A",
+                            "b": "{{formatDate(now; \"MMMM\")}}",
+                            "o": "text:equal"
+                        },
+                        {
+                            "a": "B",
+                            "b": "{{formatDate(now; \"YYYY\")}}",
+                            "o": "number:equal"
+                        }
+                    ]
+                ],
+                "sheetId": "Form Responses 1",
+                "sortOrder": "desc",
+                "spreadsheetId": "{{9.id}}",
+                "tableFirstRow": "A1:CZ1",
+                "includesHeaders": true,
+                "valueRenderOption": "FORMATTED_VALUE",
+                "dateTimeRenderOption": "FORMATTED_STRING"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 300
+                },
+                "restore": {
+                    "expect": {
+                        "from": {
+                            "label": "Select from My Drive"
+                        },
+                        "orderBy": {
+                            "mode": "chose"
+                        },
+                        "sheetId": {
+                            "mode": "edit"
+                        },
+                        "sortOrder": {
+                            "mode": "chose",
+                            "label": "Descending"
+                        },
+                        "spreadsheetId": {
+                            "mode": "edit"
+                        },
+                        "tableFirstRow": {
+                            "label": "A-CZ"
+                        },
+                        "includesHeaders": {
+                            "mode": "chose",
+                            "label": "Yes"
+                        },
+                        "valueRenderOption": {
+                            "mode": "chose",
+                            "label": "Formatted value"
+                        },
+                        "dateTimeRenderOption": {
+                            "mode": "chose",
+                            "label": "Formatted string"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "My Google connection (l.govender@make.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "from",
+                        "type": "select",
+                        "label": "Enter a Spreadsheet ID and Sheet Name",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "valueRenderOption",
+                        "type": "select",
+                        "label": "Value render option",
+                        "validate": {
+                            "enum": [
+                                "FORMATTED_VALUE",
+                                "UNFORMATTED_VALUE",
+                                "FORMULA"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "dateTimeRenderOption",
+                        "type": "select",
+                        "label": "Date and time render option",
+                        "validate": {
+                            "enum": [
+                                "SERIAL_NUMBER",
+                                "FORMATTED_STRING"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "number",
+                        "label": "Maximum number of returned rows"
+                    },
+                    {
+                        "name": "spreadsheetId",
+                        "type": "select",
+                        "label": "Spreadsheet",
+                        "required": true
+                    },
+                    {
+                        "name": "sheetId",
+                        "type": "select",
+                        "label": "Sheet Name",
+                        "required": true
+                    },
+                    {
+                        "name": "includesHeaders",
+                        "type": "select",
+                        "label": "Table contains headers",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                true,
+                                false
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tableFirstRow",
+                        "type": "select",
+                        "label": "Column range",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "A1:Z1",
+                                "A1:BZ1",
+                                "A1:CZ1",
+                                "A1:DZ1",
+                                "A1:MZ1",
+                                "A1:ZZ1",
+                                "A1:AZZ1",
+                                "A1:BZZ1",
+                                "A1:CZZ1",
+                                "A1:DZZ1",
+                                "A1:MZZ1",
+                                "A1:ZZZ1"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "filter",
+                        "type": "filter",
+                        "label": "Filter",
+                        "options": "rpc://google-sheets/2/rpcGetFilterKeys?includesHeaders=true"
+                    },
+                    {
+                        "name": "sortOrder",
+                        "type": "select",
+                        "label": "Sort order",
+                        "validate": {
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "orderBy",
+                        "type": "select",
+                        "label": "Order by"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 22,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "mapper": null,
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 300
+                }
+            },
+            "routes": [
+                {
+                    "flow": [
+                        {
+                            "id": 13,
+                            "module": "google-drive:searchForFilesFolders",
+                            "version": 4,
+                            "parameters": {},
+                            "filter": {
+                                "name": "Performance review not completed",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{12.`__IMTLENGTH__`}}",
+                                            "b": "0",
+                                            "o": "number:equal"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "query": "{{9.name}}",
+                                "select": "list",
+                                "operator": "contains",
+                                "searchType": "title"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 900,
+                                    "y": 0
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "select": {
+                                            "label": "Select from the list"
+                                        },
+                                        "folderId": {
+                                            "mode": "chose",
+                                            "path": [
+                                                "Courses and Tutorials",
+                                                "Google forms"
+                                            ]
+                                        },
+                                        "operator": {
+                                            "label": "Search for name containing the search term"
+                                        },
+                                        "retrieve": {
+                                            "label": "Files"
+                                        },
+                                        "searchType": {
+                                            "label": "Search within file/folder names"
+                                        },
+                                        "destination": {
+                                            "label": "My Drive"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google-restricted"
+                                            },
+                                            "label": "My Google Restricted connection (l.govender@make.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google-restricted",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "select",
+                                        "type": "select",
+                                        "label": "Select the Method",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "map",
+                                                "list"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "retrieve",
+                                        "type": "select",
+                                        "label": "Retrieve",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "file",
+                                                "folder",
+                                                "file_folder"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "searchType",
+                                        "type": "select",
+                                        "label": "Search",
+                                        "validate": {
+                                            "enum": [
+                                                "title",
+                                                "fulltext",
+                                                "custom"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "limit",
+                                        "type": "uinteger",
+                                        "label": "Limit"
+                                    },
+                                    {
+                                        "name": "destination",
+                                        "type": "select",
+                                        "label": "Choose a Drive",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "drive",
+                                                "share",
+                                                "team"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "folderId",
+                                        "type": "folder",
+                                        "label": "Choose a Folder"
+                                    },
+                                    {
+                                        "name": "query",
+                                        "type": "text",
+                                        "label": "Query",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "operator",
+                                        "type": "select",
+                                        "label": "Search options",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "=",
+                                                "contains"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 20,
+                            "module": "util:TextAggregator",
+                            "version": 1,
+                            "parameters": {
+                                "feeder": 9,
+                                "rowSeparator": "\n"
+                            },
+                            "mapper": {
+                                "value": "<{{13.webViewLink}}|{{13.name}}>"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1200,
+                                    "y": 0
+                                },
+                                "restore": {
+                                    "extra": {
+                                        "feeder": {
+                                            "label": "Google Drive - Search for Files/Folders"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "rowSeparator": {
+                                            "label": "New row"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "rowSeparator",
+                                        "type": "select",
+                                        "label": "Row separator",
+                                        "validate": {
+                                            "enum": [
+                                                "\n",
+                                                "\t",
+                                                "other"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "value",
+                                        "type": "text",
+                                        "label": "Text"
+                                    }
+                                ],
+                                "advanced": true
+                            },
+                            "flags": {
+                                "stopIfEmpty": true
+                            }
+                        },
+                        {
+                            "id": 21,
+                            "module": "slack:CreateMessage",
+                            "version": 4,
+                            "parameters": {},
+                            "mapper": {
+                                "text": "Hey There! \n\nThis is a friendly reminder to complete the following report/s:\n\n{{20.text}}",
+                                "parse": false,
+                                "mrkdwn": true
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1500,
+                                    "y": 0
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "parse": {
+                                            "mode": "chose"
+                                        },
+                                        "mrkdwn": {
+                                            "mode": "chose"
+                                        },
+                                        "channel": {
+                                            "mode": "chose",
+                                            "label": "lwgovender7"
+                                        },
+                                        "link_names": {
+                                            "mode": "chose"
+                                        },
+                                        "channelType": {
+                                            "label": "IM channel"
+                                        },
+                                        "channelWType": {
+                                            "label": "Select from the list"
+                                        },
+                                        "unfurl_links": {
+                                            "mode": "chose"
+                                        },
+                                        "unfurl_media": {
+                                            "mode": "chose"
+                                        },
+                                        "reply_broadcast": {
+                                            "mode": "chose"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "slack2"
+                                            },
+                                            "label": "My Slack (user) connection (lwgovender7)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:slack2,slack3",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "channelWType",
+                                        "type": "select",
+                                        "label": "Enter a channel ID or name",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "manualy",
+                                                "list"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "text",
+                                        "type": "text",
+                                        "label": "Text"
+                                    },
+                                    {
+                                        "name": "blocks",
+                                        "type": "text",
+                                        "label": "Blocks"
+                                    },
+                                    {
+                                        "name": "thread_ts",
+                                        "type": "text",
+                                        "label": "Thread message ID (time stamp)"
+                                    },
+                                    {
+                                        "name": "reply_broadcast",
+                                        "type": "boolean",
+                                        "label": "Reply broadcast"
+                                    },
+                                    {
+                                        "name": "link_names",
+                                        "type": "boolean",
+                                        "label": "Link names"
+                                    },
+                                    {
+                                        "name": "parse",
+                                        "type": "boolean",
+                                        "label": "Parse message text"
+                                    },
+                                    {
+                                        "name": "mrkdwn",
+                                        "type": "boolean",
+                                        "label": "Use markdown"
+                                    },
+                                    {
+                                        "name": "unfurl_links",
+                                        "type": "boolean",
+                                        "label": "Unfurl primarily text-based content"
+                                    },
+                                    {
+                                        "name": "unfurl_media",
+                                        "type": "boolean",
+                                        "label": "Unfurl media content"
+                                    },
+                                    {
+                                        "name": "icon_emoji",
+                                        "type": "text",
+                                        "label": "Icon emoji"
+                                    },
+                                    {
+                                        "name": "icon_url",
+                                        "type": "url",
+                                        "label": "Icon url"
+                                    },
+                                    {
+                                        "name": "username",
+                                        "type": "text",
+                                        "label": "User name"
+                                    },
+                                    {
+                                        "name": "channelType",
+                                        "type": "select",
+                                        "label": "Channel type",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "public",
+                                                "private",
+                                                "im",
+                                                "mpim"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "channel",
+                                        "type": "select",
+                                        "label": "User",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 28,
+                            "module": "util:SetVariables",
+                            "version": 1,
+                            "parameters": {},
+                            "filter": {
+                                "name": "Performance review completed",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{12.`__IMTLENGTH__`}}",
+                                            "b": "1",
+                                            "o": "number:equal"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "scope": "roundtrip",
+                                "variables": [
+                                    {
+                                        "name": "Accountability",
+                                        "value": "{{get(split(12.`5`; emptystring); 1)}}"
+                                    },
+                                    {
+                                        "name": "Punctuality",
+                                        "value": "{{get(split(12.`7`; emptystring); 1)}}"
+                                    },
+                                    {
+                                        "name": "Cooperation",
+                                        "value": "{{get(split(12.`9`; emptystring); 1)}}"
+                                    },
+                                    {
+                                        "name": "Quality",
+                                        "value": "{{get(split(12.`11`; emptystring); 1)}}"
+                                    },
+                                    {
+                                        "name": "Goal meeting",
+                                        "value": "{{get(split(12.`13`; emptystring); 1)}}"
+                                    },
+                                    {
+                                        "name": "Total_Score",
+                                        "value": "{{sum(parseNumber(get(split(12.`5`; emptystring); 1)) + parseNumber(get(split(12.`7`; emptystring); 1)) + parseNumber(get(split(12.`9`; emptystring); 1)) + parseNumber(get(split(12.`11`; emptystring); 1)) + parseNumber(get(split(12.`13`; emptystring); 1)))}}"
+                                    },
+                                    {
+                                        "name": "Overal_rating",
+                                        "value": "{{round(sum(parseNumber(get(split(12.`5`; emptystring); 1)) + parseNumber(get(split(12.`7`; emptystring); 1)) + parseNumber(get(split(12.`9`; emptystring); 1)) + parseNumber(get(split(12.`11`; emptystring); 1)) + parseNumber(get(split(12.`13`; emptystring); 1))) / 15 * 100)}}"
+                                    },
+                                    {
+                                        "name": "Name",
+                                        "value": "{{get(split(9.name; space); 4)}}{{space}}{{get(split(9.name; space); 5)}}{{space}}{{get(split(9.name; space); 6)}}"
+                                    }
+                                ]
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 900,
+                                    "y": 450
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "scope": {
+                                            "label": "One cycle"
+                                        },
+                                        "variables": {
+                                            "items": [
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    }
+                                },
+                                "expect": [
+                                    {
+                                        "name": "variables",
+                                        "spec": [
+                                            {
+                                                "name": "name",
+                                                "type": "text",
+                                                "label": "Variable name",
+                                                "required": true
+                                            },
+                                            {
+                                                "name": "value",
+                                                "type": "any",
+                                                "label": "Variable value"
+                                            }
+                                        ],
+                                        "type": "array",
+                                        "label": "Variables"
+                                    },
+                                    {
+                                        "name": "scope",
+                                        "type": "select",
+                                        "label": "Variable lifetime",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "roundtrip",
+                                                "execution"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "Accountability",
+                                        "type": "any",
+                                        "label": "Accountability"
+                                    },
+                                    {
+                                        "name": "Punctuality",
+                                        "type": "any",
+                                        "label": "Punctuality"
+                                    },
+                                    {
+                                        "name": "Cooperation",
+                                        "type": "any",
+                                        "label": "Cooperation"
+                                    },
+                                    {
+                                        "name": "Quality",
+                                        "type": "any",
+                                        "label": "Quality"
+                                    },
+                                    {
+                                        "name": "Goal meeting",
+                                        "type": "any",
+                                        "label": "Goal meeting"
+                                    },
+                                    {
+                                        "name": "Total_Score",
+                                        "type": "any",
+                                        "label": "Total_Score"
+                                    },
+                                    {
+                                        "name": "Overal_rating",
+                                        "type": "any",
+                                        "label": "Overal_rating"
+                                    },
+                                    {
+                                        "name": "Name",
+                                        "type": "any",
+                                        "label": "Name"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 37,
+                            "module": "google-sheets:updateRow",
+                            "version": 2,
+                            "parameters": {},
+                            "mapper": {
+                                "values": {
+                                    "16": "{{28.Total_Score}}",
+                                    "17": "{{28.Overal_rating}}"
+                                },
+                                "sheetId": "{{12.`__SHEET__`}}",
+                                "rowNumber": "{{12.`__ROW_NUMBER__`}}",
+                                "spreadsheetId": "{{12.`__SPREADSHEET_ID__`}}",
+                                "tableFirstRow": "A1:Z1",
+                                "valueInputOption": "USER_ENTERED"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1200,
+                                    "y": 450
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "mode": {
+                                            "label": "Enter manually"
+                                        },
+                                        "tableFirstRow": {
+                                            "label": "A-Z",
+                                            "nested": [
+                                                {
+                                                    "name": "values",
+                                                    "spec": [
+                                                        {
+                                                            "name": "0",
+                                                            "type": "text",
+                                                            "label": "A"
+                                                        },
+                                                        {
+                                                            "name": "1",
+                                                            "type": "text",
+                                                            "label": "B"
+                                                        },
+                                                        {
+                                                            "name": "2",
+                                                            "type": "text",
+                                                            "label": "C"
+                                                        },
+                                                        {
+                                                            "name": "3",
+                                                            "type": "text",
+                                                            "label": "D"
+                                                        },
+                                                        {
+                                                            "name": "4",
+                                                            "type": "text",
+                                                            "label": "E"
+                                                        },
+                                                        {
+                                                            "name": "5",
+                                                            "type": "text",
+                                                            "label": "F"
+                                                        },
+                                                        {
+                                                            "name": "6",
+                                                            "type": "text",
+                                                            "label": "G"
+                                                        },
+                                                        {
+                                                            "name": "7",
+                                                            "type": "text",
+                                                            "label": "H"
+                                                        },
+                                                        {
+                                                            "name": "8",
+                                                            "type": "text",
+                                                            "label": "I"
+                                                        },
+                                                        {
+                                                            "name": "9",
+                                                            "type": "text",
+                                                            "label": "J"
+                                                        },
+                                                        {
+                                                            "name": "10",
+                                                            "type": "text",
+                                                            "label": "K"
+                                                        },
+                                                        {
+                                                            "name": "11",
+                                                            "type": "text",
+                                                            "label": "L"
+                                                        },
+                                                        {
+                                                            "name": "12",
+                                                            "type": "text",
+                                                            "label": "M"
+                                                        },
+                                                        {
+                                                            "name": "13",
+                                                            "type": "text",
+                                                            "label": "N"
+                                                        },
+                                                        {
+                                                            "name": "14",
+                                                            "type": "text",
+                                                            "label": "O"
+                                                        },
+                                                        {
+                                                            "name": "15",
+                                                            "type": "text",
+                                                            "label": "P"
+                                                        },
+                                                        {
+                                                            "name": "16",
+                                                            "type": "text",
+                                                            "label": "Q"
+                                                        },
+                                                        {
+                                                            "name": "17",
+                                                            "type": "text",
+                                                            "label": "R"
+                                                        },
+                                                        {
+                                                            "name": "18",
+                                                            "type": "text",
+                                                            "label": "S"
+                                                        },
+                                                        {
+                                                            "name": "19",
+                                                            "type": "text",
+                                                            "label": "T"
+                                                        },
+                                                        {
+                                                            "name": "20",
+                                                            "type": "text",
+                                                            "label": "U"
+                                                        },
+                                                        {
+                                                            "name": "21",
+                                                            "type": "text",
+                                                            "label": "V"
+                                                        },
+                                                        {
+                                                            "name": "22",
+                                                            "type": "text",
+                                                            "label": "W"
+                                                        },
+                                                        {
+                                                            "name": "23",
+                                                            "type": "text",
+                                                            "label": "X"
+                                                        },
+                                                        {
+                                                            "name": "24",
+                                                            "type": "text",
+                                                            "label": "Y"
+                                                        },
+                                                        {
+                                                            "name": "25",
+                                                            "type": "text",
+                                                            "label": "Z"
+                                                        }
+                                                    ],
+                                                    "type": "collection",
+                                                    "label": "Values"
+                                                }
+                                            ]
+                                        },
+                                        "valueInputOption": {
+                                            "mode": "chose",
+                                            "label": "User entered"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google"
+                                            },
+                                            "label": "My Google connection (l.govender@make.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "mode",
+                                        "type": "select",
+                                        "label": "Choose a Method",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "select",
+                                                "fromAll",
+                                                "map"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "valueInputOption",
+                                        "type": "select",
+                                        "label": "Value input option",
+                                        "validate": {
+                                            "enum": [
+                                                "USER_ENTERED",
+                                                "RAW"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "spreadsheetId",
+                                        "type": "text",
+                                        "label": "Spreadsheet",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "sheetId",
+                                        "type": "text",
+                                        "label": "Sheet Name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "rowNumber",
+                                        "type": "uinteger",
+                                        "label": "Row number",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "tableFirstRow",
+                                        "type": "select",
+                                        "label": "Column range",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "A1:Z1",
+                                                "A1:BZ1",
+                                                "A1:CZ1",
+                                                "A1:DZ1",
+                                                "A1:MZ1",
+                                                "A1:ZZ1"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "values",
+                                        "spec": [
+                                            {
+                                                "name": "0",
+                                                "type": "text",
+                                                "label": "A"
+                                            },
+                                            {
+                                                "name": "1",
+                                                "type": "text",
+                                                "label": "B"
+                                            },
+                                            {
+                                                "name": "2",
+                                                "type": "text",
+                                                "label": "C"
+                                            },
+                                            {
+                                                "name": "3",
+                                                "type": "text",
+                                                "label": "D"
+                                            },
+                                            {
+                                                "name": "4",
+                                                "type": "text",
+                                                "label": "E"
+                                            },
+                                            {
+                                                "name": "5",
+                                                "type": "text",
+                                                "label": "F"
+                                            },
+                                            {
+                                                "name": "6",
+                                                "type": "text",
+                                                "label": "G"
+                                            },
+                                            {
+                                                "name": "7",
+                                                "type": "text",
+                                                "label": "H"
+                                            },
+                                            {
+                                                "name": "8",
+                                                "type": "text",
+                                                "label": "I"
+                                            },
+                                            {
+                                                "name": "9",
+                                                "type": "text",
+                                                "label": "J"
+                                            },
+                                            {
+                                                "name": "10",
+                                                "type": "text",
+                                                "label": "K"
+                                            },
+                                            {
+                                                "name": "11",
+                                                "type": "text",
+                                                "label": "L"
+                                            },
+                                            {
+                                                "name": "12",
+                                                "type": "text",
+                                                "label": "M"
+                                            },
+                                            {
+                                                "name": "13",
+                                                "type": "text",
+                                                "label": "N"
+                                            },
+                                            {
+                                                "name": "14",
+                                                "type": "text",
+                                                "label": "O"
+                                            },
+                                            {
+                                                "name": "15",
+                                                "type": "text",
+                                                "label": "P"
+                                            },
+                                            {
+                                                "name": "16",
+                                                "type": "text",
+                                                "label": "Q"
+                                            },
+                                            {
+                                                "name": "17",
+                                                "type": "text",
+                                                "label": "R"
+                                            },
+                                            {
+                                                "name": "18",
+                                                "type": "text",
+                                                "label": "S"
+                                            },
+                                            {
+                                                "name": "19",
+                                                "type": "text",
+                                                "label": "T"
+                                            },
+                                            {
+                                                "name": "20",
+                                                "type": "text",
+                                                "label": "U"
+                                            },
+                                            {
+                                                "name": "21",
+                                                "type": "text",
+                                                "label": "V"
+                                            },
+                                            {
+                                                "name": "22",
+                                                "type": "text",
+                                                "label": "W"
+                                            },
+                                            {
+                                                "name": "23",
+                                                "type": "text",
+                                                "label": "X"
+                                            },
+                                            {
+                                                "name": "24",
+                                                "type": "text",
+                                                "label": "Y"
+                                            },
+                                            {
+                                                "name": "25",
+                                                "type": "text",
+                                                "label": "Z"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Values"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 39,
+                            "module": "google-sheets:filterRows",
+                            "version": 2,
+                            "parameters": {},
+                            "mapper": {
+                                "from": "drive",
+                                "limit": "100",
+                                "filter": [
+                                    [
+                                        {
+                                            "a": "B",
+                                            "b": "{{formatDate(now; \"YYYY\")}}",
+                                            "o": "number:equal"
+                                        }
+                                    ]
+                                ],
+                                "sheetId": "{{12.`__SHEET__`}}",
+                                "sortOrder": "asc",
+                                "spreadsheetId": "{{37.spreadsheetId}}",
+                                "tableFirstRow": "A1:Z1",
+                                "includesHeaders": true,
+                                "valueRenderOption": "FORMATTED_VALUE",
+                                "dateTimeRenderOption": "FORMATTED_STRING"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1500,
+                                    "y": 450
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "from": {
+                                            "label": "Select from My Drive"
+                                        },
+                                        "orderBy": {
+                                            "mode": "chose"
+                                        },
+                                        "sheetId": {
+                                            "mode": "edit"
+                                        },
+                                        "sortOrder": {
+                                            "mode": "chose",
+                                            "label": "Ascending"
+                                        },
+                                        "spreadsheetId": {
+                                            "mode": "edit"
+                                        },
+                                        "tableFirstRow": {
+                                            "label": "A-Z"
+                                        },
+                                        "includesHeaders": {
+                                            "mode": "chose",
+                                            "label": "Yes"
+                                        },
+                                        "valueRenderOption": {
+                                            "mode": "chose",
+                                            "label": "Formatted value"
+                                        },
+                                        "dateTimeRenderOption": {
+                                            "mode": "chose",
+                                            "label": "Formatted string"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google"
+                                            },
+                                            "label": "My Google connection (l.govender@make.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "from",
+                                        "type": "select",
+                                        "label": "Enter a Spreadsheet ID and Sheet Name",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "drive",
+                                                "share"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "valueRenderOption",
+                                        "type": "select",
+                                        "label": "Value render option",
+                                        "validate": {
+                                            "enum": [
+                                                "FORMATTED_VALUE",
+                                                "UNFORMATTED_VALUE",
+                                                "FORMULA"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "dateTimeRenderOption",
+                                        "type": "select",
+                                        "label": "Date and time render option",
+                                        "validate": {
+                                            "enum": [
+                                                "SERIAL_NUMBER",
+                                                "FORMATTED_STRING"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "limit",
+                                        "type": "number",
+                                        "label": "Maximum number of returned rows"
+                                    },
+                                    {
+                                        "name": "spreadsheetId",
+                                        "type": "select",
+                                        "label": "Spreadsheet",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "sheetId",
+                                        "type": "select",
+                                        "label": "Sheet Name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "includesHeaders",
+                                        "type": "select",
+                                        "label": "Table contains headers",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                true,
+                                                false
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "tableFirstRow",
+                                        "type": "select",
+                                        "label": "Column range",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "A1:Z1",
+                                                "A1:BZ1",
+                                                "A1:CZ1",
+                                                "A1:DZ1",
+                                                "A1:MZ1",
+                                                "A1:ZZ1",
+                                                "A1:AZZ1",
+                                                "A1:BZZ1",
+                                                "A1:CZZ1",
+                                                "A1:DZZ1",
+                                                "A1:MZZ1",
+                                                "A1:ZZZ1"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "filter",
+                                        "type": "filter",
+                                        "label": "Filter",
+                                        "options": "rpc://google-sheets/2/rpcGetFilterKeys?includesHeaders=true"
+                                    },
+                                    {
+                                        "name": "sortOrder",
+                                        "type": "select",
+                                        "label": "Sort order",
+                                        "validate": {
+                                            "enum": [
+                                                "asc",
+                                                "desc"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "orderBy",
+                                        "type": "select",
+                                        "label": "Order by"
+                                    }
+                                ],
+                                "advanced": true
+                            }
+                        },
+                        {
+                            "id": 101,
+                            "module": "builtin:BasicRouter",
+                            "version": 1,
+                            "filter": {
+                                "name": "Current year performance",
+                                "conditions": []
+                            },
+                            "mapper": null,
+                            "metadata": {
+                                "designer": {
+                                    "x": 1800,
+                                    "y": 450
+                                }
+                            },
+                            "routes": [
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 99,
+                                            "module": "util:TextAggregator",
+                                            "version": 1,
+                                            "parameters": {
+                                                "feeder": 39,
+                                                "rowSeparator": "other",
+                                                "otherRowSeparator": ","
+                                            },
+                                            "mapper": {
+                                                "value": "{{39.`2`}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2100,
+                                                    "y": 300
+                                                },
+                                                "restore": {
+                                                    "extra": {
+                                                        "feeder": {
+                                                            "label": "Google Sheets - Search Rows"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "rowSeparator": {
+                                                            "label": "Other"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "rowSeparator",
+                                                        "type": "select",
+                                                        "label": "Row separator",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "\n",
+                                                                "\t",
+                                                                "other"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "otherRowSeparator",
+                                                        "type": "text",
+                                                        "label": "Separator"
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "value",
+                                                        "type": "text",
+                                                        "label": "Text"
+                                                    }
+                                                ],
+                                                "advanced": true
+                                            }
+                                        },
+                                        {
+                                            "id": 100,
+                                            "module": "util:SetVariable2",
+                                            "version": 1,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "name": "axis",
+                                                "scope": "roundtrip",
+                                                "value": "{{99.text}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2400,
+                                                    "y": 300
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "scope": {
+                                                            "label": "One cycle"
+                                                        }
+                                                    }
+                                                },
+                                                "expect": [
+                                                    {
+                                                        "name": "name",
+                                                        "type": "text",
+                                                        "label": "Variable name",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "scope",
+                                                        "type": "select",
+                                                        "label": "Variable lifetime",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "roundtrip",
+                                                                "execution"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "value",
+                                                        "type": "any",
+                                                        "label": "Variable value"
+                                                    }
+                                                ],
+                                                "interface": [
+                                                    {
+                                                        "name": "axis",
+                                                        "type": "any",
+                                                        "label": "axis"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 70,
+                                            "module": "util:TextAggregator",
+                                            "version": 1,
+                                            "parameters": {
+                                                "feeder": 39,
+                                                "rowSeparator": "other",
+                                                "otherRowSeparator": ","
+                                            },
+                                            "mapper": {
+                                                "value": "{{39.`17`}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2100,
+                                                    "y": 600
+                                                },
+                                                "restore": {
+                                                    "extra": {
+                                                        "feeder": {
+                                                            "label": "Google Sheets - Search Rows"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "rowSeparator": {
+                                                            "label": "Other"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "rowSeparator",
+                                                        "type": "select",
+                                                        "label": "Row separator",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "\n",
+                                                                "\t",
+                                                                "other"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "otherRowSeparator",
+                                                        "type": "text",
+                                                        "label": "Separator"
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "value",
+                                                        "type": "text",
+                                                        "label": "Text"
+                                                    }
+                                                ],
+                                                "advanced": true
+                                            }
+                                        },
+                                        {
+                                            "id": 102,
+                                            "module": "util:GetVariable2",
+                                            "version": 1,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "name": "axis"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2400,
+                                                    "y": 600
+                                                },
+                                                "restore": {},
+                                                "expect": [
+                                                    {
+                                                        "name": "name",
+                                                        "type": "text",
+                                                        "label": "Variable name",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "interface": [
+                                                    {
+                                                        "name": "axis",
+                                                        "type": "any",
+                                                        "label": "axis"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 68,
+                                            "module": "quickchart:barchart",
+                                            "version": 1,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "dataN": [
+                                                    "{{switch(102.axis; \"Q1\"; 70.text + \",0,0,0\"; \"Q2\"; \"0,\" + 70.text + \",0,0\"; \"Q3\"; \"0,0\" + 70.text + \",0\"; \"Q4\"; \"0,0,0,\" + 70.text; \"Q1,Q2\"; 70.text + \",0,0\"; \"Q1,Q2,Q3\"; 70.text + \",0\"; \"Q1,Q2,Q3,Q4\"; 70.text; \"Q2,Q3\"; \"0,\" + 70.text + \",0\"; \"Q3,Q4\"; \"0,0,\" + 70.text)}}",
+                                                    ""
+                                                ],
+                                                "title": "{{12.`2`}} {{formatDate(now; \"YYYY\")}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2700,
+                                                    "y": 600
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "dataN": {
+                                                            "mode": "chose",
+                                                            "items": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        },
+                                                        "labelN": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "backgroundColorN": {
+                                                            "mode": "chose"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "quickchart"
+                                                            },
+                                                            "label": "My QuickChart connection"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:quickchart",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "chartId",
+                                                        "type": "text",
+                                                        "label": "Chart Template URL",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "title",
+                                                        "type": "text",
+                                                        "label": "Chart Title override"
+                                                    },
+                                                    {
+                                                        "name": "dataN",
+                                                        "spec": {
+                                                            "name": "value",
+                                                            "type": "text",
+                                                            "label": "Data"
+                                                        },
+                                                        "type": "array",
+                                                        "label": "Datasets"
+                                                    },
+                                                    {
+                                                        "name": "labels",
+                                                        "type": "text",
+                                                        "label": "Axis labels"
+                                                    },
+                                                    {
+                                                        "name": "labelN",
+                                                        "spec": {
+                                                            "name": "value",
+                                                            "type": "text",
+                                                            "label": "Label"
+                                                        },
+                                                        "type": "array",
+                                                        "label": "Legend labels"
+                                                    },
+                                                    {
+                                                        "name": "backgroundColorN",
+                                                        "spec": {
+                                                            "name": "value",
+                                                            "type": "text",
+                                                            "label": "Color"
+                                                        },
+                                                        "type": "array",
+                                                        "label": "Background colors"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 25,
+                                            "module": "google-docs:createADocumentFromTemplate",
+                                            "version": 1,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "name": "{{28.Name}}",
+                                                "select": "dropdown",
+                                                "requests": {
+                                                    "date": "{{12.`4`}}",
+                                                    "goal": "{{28.`Goal meeting`}}",
+                                                    "name": "{{28.Name}}",
+                                                    "month": "{{12.`0`}}",
+                                                    "quarter": "{{12.`2`}}",
+                                                    "comments_1": "{{12.`6`}}",
+                                                    "comments_2": "{{12.`8`}}",
+                                                    "comments_3": "{{12.`10`}}",
+                                                    "comments_4": "{{12.`12`}}",
+                                                    "comments_5": "{{12.`14`}}",
+                                                    "department": "{{12.`3`}}",
+                                                    "cooperation": "{{28.Cooperation}}",
+                                                    "punctuality": "{{28.Punctuality}}",
+                                                    "total_score": "{{28.Total_Score}}",
+                                                    "accountability": "{{28.Accountability}}",
+                                                    "overall_rating": "{{28.Overal_rating}}",
+                                                    "quality of work": "{{28.Quality}}",
+                                                    "additional notes": "{{12.`15`}}"
+                                                },
+                                                "destination": "drive"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 3000,
+                                                    "y": 600
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "from": {
+                                                            "label": "My Drive"
+                                                        },
+                                                        "select": {
+                                                            "label": "By Dropdown"
+                                                        },
+                                                        "document": {
+                                                            "path": [
+                                                                "Courses and Tutorials",
+                                                                "Google forms",
+                                                                "Performance template",
+                                                                "Individual Performance template"
+                                                            ]
+                                                        },
+                                                        "folderId": {
+                                                            "mode": "chose",
+                                                            "path": [
+                                                                "17Mq4u_EsAGgtxurfz9NKIorSByx5qzVJ",
+                                                                "1BQe45ZhSqRC1hin3L5UObw3e5KPZHWjE",
+                                                                "1yYqnlTbCNqDxNenx_bAGF17PoIfcfg92",
+                                                                "1ATNCRAdt81dcdqVhh1t0YbQcKaenBnZa"
+                                                            ]
+                                                        },
+                                                        "destination": {
+                                                            "label": "My Drive"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "google"
+                                                            },
+                                                            "label": "My Google connection (l.govender@make.com)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:google",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "select",
+                                                        "type": "select",
+                                                        "label": "Create a Document from a Template",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "map",
+                                                                "dropdown"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "name",
+                                                        "type": "text",
+                                                        "label": "Title",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "destination",
+                                                        "type": "select",
+                                                        "label": "New Drive Location",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "drive",
+                                                                "share",
+                                                                "team"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "from",
+                                                        "type": "select",
+                                                        "label": "Choose a Drive",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "drive",
+                                                                "share",
+                                                                "team"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "document",
+                                                        "type": "file",
+                                                        "label": "Document ID",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "requests",
+                                                        "spec": [
+                                                            {
+                                                                "name": "name",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "department",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "month",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "quarter",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "date",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "accountability",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "comments_1",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "punctuality",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "comments_2",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "cooperation",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "comments_3",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "quality of work",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "comments_4",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "goal",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "comments_5",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "total_score",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "overall_rating",
+                                                                "type": "any"
+                                                            },
+                                                            {
+                                                                "name": "additional notes",
+                                                                "type": "any"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Values"
+                                                    },
+                                                    {
+                                                        "name": "folderId",
+                                                        "type": "folder",
+                                                        "label": "New Document's Location",
+                                                        "required": true
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 78,
+                                            "module": "google-docs:addAnImageToADocument",
+                                            "version": 1,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "index": "530",
+                                                "choose": "dropdown",
+                                                "select": "location",
+                                                "select1": "index",
+                                                "document": "{{25.id}}",
+                                                "index_uri": "{{68.url}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 3300,
+                                                    "y": 600
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "choose": {
+                                                            "label": "By Dropdown"
+                                                        },
+                                                        "select": {
+                                                            "label": "By specification of location"
+                                                        },
+                                                        "select1": {
+                                                            "label": "By index"
+                                                        },
+                                                        "document": {
+                                                            "mode": "edit",
+                                                            "path": []
+                                                        },
+                                                        "destination": {
+                                                            "label": "My Drive"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "google"
+                                                            },
+                                                            "label": "My Google connection (l.govender@make.com)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:google",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "choose",
+                                                        "type": "select",
+                                                        "label": "Select a Document",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "mapping",
+                                                                "dropdown"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "destination",
+                                                        "type": "select",
+                                                        "label": "Choose a Drive",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "drive",
+                                                                "share",
+                                                                "team"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "document",
+                                                        "type": "file",
+                                                        "label": "Document ID",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "select",
+                                                        "type": "select",
+                                                        "label": "Insert an Image",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "location",
+                                                                "document",
+                                                                "segment"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "select1",
+                                                        "type": "select",
+                                                        "label": "Specify the location",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "index",
+                                                                "segment"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "index",
+                                                        "type": "number",
+                                                        "label": "Index",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "index_uri",
+                                                        "type": "url",
+                                                        "label": "Image URL",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "index_height_magnitude",
+                                                        "type": "number",
+                                                        "label": "Height Magnitude in Points"
+                                                    },
+                                                    {
+                                                        "name": "index_width_magnitude",
+                                                        "type": "number",
+                                                        "label": "Width Magnitude in Points"
+                                                    }
+                                                ],
+                                                "advanced": true
+                                            }
+                                        },
+                                        {
+                                            "id": 29,
+                                            "module": "google-docs:exportADocument",
+                                            "version": 1,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "document": "{{25.id}}",
+                                                "destination": "drive"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 3600,
+                                                    "y": 600
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "document": {
+                                                            "mode": "edit",
+                                                            "path": []
+                                                        },
+                                                        "mimeType": {
+                                                            "mode": "chose",
+                                                            "label": "PDF Document (.pdf)"
+                                                        },
+                                                        "destination": {
+                                                            "label": "My Drive"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "google"
+                                                            },
+                                                            "label": "My Google connection (l.govender@make.com)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:google",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "destination",
+                                                        "type": "select",
+                                                        "label": "Choose a Drive",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "drive",
+                                                                "share",
+                                                                "team"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "mimeType",
+                                                        "type": "select",
+                                                        "label": "Type",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                                                "application/vnd.oasis.opendocument.text",
+                                                                "application/rtf",
+                                                                "application/pdf",
+                                                                "text/plain",
+                                                                "text/html",
+                                                                "application/epub+zip"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "document",
+                                                        "type": "file",
+                                                        "label": "Document ID",
+                                                        "required": true
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 30,
+                                            "module": "slack:UploadFile",
+                                            "version": 4,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "data": "{{29.data}}",
+                                                "fileName": "{{29.filename}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 3900,
+                                                    "y": 600
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "channels": {
+                                                            "mode": "chose",
+                                                            "items": [
+                                                                {
+                                                                    "type": {
+                                                                        "mode": "chose",
+                                                                        "label": "IM channel"
+                                                                    },
+                                                                    "channel": {
+                                                                        "mode": "chose",
+                                                                        "label": [
+                                                                            "lwgovender7"
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "slack2"
+                                                            },
+                                                            "label": "My Slack (user) connection (lwgovender7)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:slack2",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "channels",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "select",
+                                                                "label": "Channel type",
+                                                                "options": [
+                                                                    {
+                                                                        "label": "Public channel",
+                                                                        "value": "public",
+                                                                        "nested": [
+                                                                            {
+                                                                                "name": "channel",
+                                                                                "type": "select",
+                                                                                "label": "Public channel",
+                                                                                "options": "rpc://slack/4/PublicChannels",
+                                                                                "multiple": true,
+                                                                                "required": true
+                                                                            }
+                                                                        ],
+                                                                        "default": true
+                                                                    },
+                                                                    {
+                                                                        "label": "Private channel",
+                                                                        "value": "private",
+                                                                        "nested": [
+                                                                            {
+                                                                                "name": "channel",
+                                                                                "type": "select",
+                                                                                "label": "Private channel",
+                                                                                "options": "rpc://slack/4/PrivateChannels",
+                                                                                "multiple": true,
+                                                                                "required": true
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "label": "IM channel",
+                                                                        "value": "im",
+                                                                        "nested": [
+                                                                            {
+                                                                                "name": "channel",
+                                                                                "type": "select",
+                                                                                "label": "User",
+                                                                                "options": "rpc://slack/4/IMChannels",
+                                                                                "multiple": true,
+                                                                                "required": true
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "label": "Multiple IM channel",
+                                                                        "value": "mpim",
+                                                                        "nested": [
+                                                                            {
+                                                                                "name": "channel",
+                                                                                "type": "select",
+                                                                                "label": "Multiple IM channel",
+                                                                                "options": "rpc://slack/4/MPIMChannels",
+                                                                                "multiple": true,
+                                                                                "required": true
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ],
+                                                                "required": true
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Channels",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "fileName",
+                                                        "type": "filename",
+                                                        "label": "File name",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "data",
+                                                        "type": "buffer",
+                                                        "label": "Data",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "title",
+                                                        "type": "text",
+                                                        "label": "Title"
+                                                    },
+                                                    {
+                                                        "name": "thread_ts",
+                                                        "type": "text",
+                                                        "label": "Thread ID (timestamp)"
+                                                    },
+                                                    {
+                                                        "name": "initial_comment",
+                                                        "type": "text",
+                                                        "label": "Initial comment"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}

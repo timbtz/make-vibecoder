@@ -1,0 +1,126 @@
+{
+    "name": "Insert data into PostgreSQL from a custom webhook",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                },
+                "restore": {},
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "module": "postgres:InsertIntoTable",
+            "version": 2,
+            "parameters": {
+                "table": "\"public\".\"accounts\"",
+                "isToManageDataInSharedTransaction": true
+            },
+            "mapper": {
+                "@id": "",
+                "@name": "",
+                "@balance": ""
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                },
+                "restore": {
+                    "parameters": {
+                        "table": {
+                            "label": "public.accounts"
+                        },
+                        "account": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "postgres"
+                            },
+                            "label": "My PostgreSQL connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "account",
+                        "type": "account:postgres",
+                        "label": "Connection",
+                        "required": true
+                    },
+                    {
+                        "name": "isToManageDataInSharedTransaction",
+                        "type": "boolean",
+                        "label": "Manage data within the shared transaction",
+                        "required": true
+                    },
+                    {
+                        "name": "table",
+                        "type": "select",
+                        "label": "Table",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "@id",
+                        "type": "integer",
+                        "label": "id"
+                    },
+                    {
+                        "name": "@name",
+                        "type": "text",
+                        "label": "name"
+                    },
+                    {
+                        "name": "@balance",
+                        "type": "number",
+                        "label": "balance"
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}
