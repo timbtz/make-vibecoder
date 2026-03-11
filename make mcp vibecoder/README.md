@@ -1,49 +1,38 @@
-﻿# Make.com MCP Server — Build & Deploy Automation Scenarios with AI
+# Make MCP Vibecoder
 
-[![npm version](https://img.shields.io/npm/v/make-mcp-server)](https://www.npmjs.com/package/make-mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://img.shields.io/npm/v/make-mcp-server)](https://www.npmjs.com/package/make-mcp-server)
+[![Make.com](https://img.shields.io/badge/Make.com-unofficial-blueviolet)](https://make.com)
+[![MCP](https://img.shields.io/badge/MCP-compatible-green)](https://modelcontextprotocol.io)
 
-> **⚠️ Disclaimer:** This is an **unofficial, community-driven project** created by a passionate fan of Make.com. It is **NOT** affiliated with, endorsed by, or officially supported by Make.com. 
+> **Unofficial, community-driven project.** Not affiliated with, endorsed by, or officially supported by Make.com.
 
-A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that gives AI assistants like **Claude**, **GitHub Copilot**, and **Cursor** full access to Make.com module documentation, scenario validation, and one-click deployment. Search 200+ automation modules across 40+ apps, build blueprints with auto-healing, and deploy directly to Make.com — all from your AI chat.
+An MCP server + Claude agent system for building, validating, and deploying [Make.com](https://make.com) automation scenarios through conversation. Describe what you want to automate — Claude does the rest.
 
-## Features
-
-- **🔍 200+ Modules** — Full-text search across 200+ Make.com modules (Slack, Gmail, Google Sheets, Notion, OpenAI, and 35+ more apps)
-- **📋 Module Details** — Retrieve parameters, types, descriptions, and usage docs for any module
-- **✅ Blueprint Validation** — Check scenarios for missing parameters, unknown modules, structural issues, and router sub-routes before deploying
-- **🛡️ Account-Aware Compatibility** — Verify module IDs against your live Make account/region before deployment to prevent "Module not found" scenarios
-- **🚀 Deploy to Make.com** — Push validated blueprints directly to Make.com via API
-- **🩹 Auto-Healing** — Automatically fixes LLM-generated blueprints: injects missing `metadata`, adds `designer` coordinates, strips unsupported properties like router `filter`
-- **🔀 Router Support** — Full support for `builtin:BasicRouter` with multiple routes and recursive validation
-- **📚 Scenario Templates** — Browse reusable scenario templates for common workflows
-- **📖 Guided Prompts** — MCP prompts for guided scenario building and module exploration
-- **📊 Resource Catalog** — MCP resources for browsing available apps
-- **🧪 43 Tests** — Unit + integration test suite with Vitest
-- **⚡ Fast Response** — Optimized SQLite with FTS5 full-text search
+**Search 559 modules across 170 apps. Use 266 real blueprint templates. Deploy validated scenarios to Make.com in seconds.**
 
 ---
 
-## 🚀 Quick Start — Self-Hosting Options
+## What Is This?
 
-### Option A: npx (No Installation Needed!) 🚀
+**Make MCP Vibecoder** is two things in one repo:
 
-The fastest way to get started — no cloning, no building:
+1. **An MCP server** (`make mcp vibecoder/`) — gives Claude direct access to Make.com module documentation, scenario validation, and deployment via the [Model Context Protocol](https://modelcontextprotocol.io/). Connect it once and Claude can build and ship Make scenarios from any conversation.
 
-**Prerequisites:** [Node.js](https://nodejs.org/) installed on your system
+2. **A vibecoder agent system** (`.claude/skills/` + `CLAUDE.md`) — a set of Claude skills and a CLAUDE.md instruction file that turn Claude Code into an expert Make.com automation engineer. When you open this repo in Claude Code, Claude knows how to use every tool, avoid every pitfall, and follow best-practice patterns for building scenarios.
 
-```bash
-# Run directly — no installation needed!
-npx -y make-mcp-server
-```
+Together they form a workflow where Claude both *knows* Make.com deeply (skills) and can *act* on Make.com directly (MCP tools).
 
-The package includes a pre-built database with all 200+ Make.com modules. Just add it to your MCP client config and go.
+---
 
-**Claude Desktop config** (`claude_desktop_config.json`):
+## Quick Start
 
-Basic configuration (documentation tools only):
+### Step 1 — Connect the MCP server to Claude
+
+**Option A: npx (no installation needed)**
 
 ```json
+// claude_desktop_config.json — documentation only
 {
   "mcpServers": {
     "make-mcp-server": {
@@ -57,9 +46,8 @@ Basic configuration (documentation tools only):
 }
 ```
 
-Full configuration (with Make.com deployment):
-
 ```json
+// claude_desktop_config.json — full (with deployment)
 {
   "mcpServers": {
     "make-mcp-server": {
@@ -76,42 +64,7 @@ Full configuration (with Make.com deployment):
 }
 ```
 
-> **Note:** npx will download and cache the latest version automatically. The package includes a pre-built database with all Make.com module information — no setup required.
-
----
-
-### Option B: Docker (Isolated & Reproducible) 🐳
-
-**Prerequisites:** Docker installed on your system
-
-```bash
-# Build the Docker image
-docker build -t make-mcp-server .
-
-# Test it works
-echo '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}},"id":1}' | docker run -i --rm make-mcp-server
-```
-
-**Claude Desktop config:**
-
-Basic configuration (documentation tools only):
-
-```json
-{
-  "mcpServers": {
-    "make-mcp-server": {
-      "command": "docker",
-      "args": [
-        "run", "-i", "--rm", "--init",
-        "-e", "LOG_LEVEL=error",
-        "make-mcp-server"
-      ]
-    }
-  }
-}
-```
-
-Full configuration (with Make.com deployment):
+**Option B: Docker**
 
 ```json
 {
@@ -131,53 +84,17 @@ Full configuration (with Make.com deployment):
 }
 ```
 
-> **Important:** The `-i` flag is required for MCP stdio communication.
+Build the image first: `docker build -t make-mcp-server ./make\ mcp\ vibecoder/`
 
----
-
-### Option C: Local Installation (For Development) 🛠️
-
-**Prerequisites:** [Node.js](https://nodejs.org/) and Git
+**Option C: Claude Code CLI**
 
 ```bash
-# 1. Clone and install
-git clone https://github.com/danishashko/make-mcp.git
-cd make-mcp
-npm install
-
-# 2. Build
-npm run build
-
-# 3. Populate the module database (already done if using npm package)
-npm run scrape:prod
-
-# 4. Test it works
-npm start
+claude mcp add make-mcp-server -- npx -y make-mcp-server
 ```
 
-**Claude Desktop config:**
+Then set env vars in your Claude Code settings or `.env`.
 
-```json
-{
-  "mcpServers": {
-    "make-mcp-server": {
-      "command": "node",
-      "args": ["/absolute/path/to/make-mcp/dist/mcp/server.js"],
-      "env": {
-        "LOG_LEVEL": "error",
-        "MAKE_API_KEY": "your_api_key_here",
-        "MAKE_TEAM_ID": "your_team_id"
-      }
-    }
-  }
-}
-```
-
-> **Note:** The Make.com API credentials are optional. Without them, you'll have access to all documentation, search, and validation tools. With them, you'll additionally get scenario deployment capabilities.
-
----
-
-### Configuration File Locations
+**Config file locations:**
 
 | Platform | Path |
 |----------|------|
@@ -185,196 +102,277 @@ npm start
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
 | Linux | `~/.config/Claude/claude_desktop_config.json` |
 
-**Restart Claude Desktop after updating configuration.**
+Restart Claude Desktop after updating the config.
 
 ---
 
-### 💻 Connect Your IDE
+### Step 2 — Get a Make.com API key
 
-make-mcp-server works with any MCP-compatible client:
+1. Go to [Make.com](https://make.com) → your avatar → **Profile** → **API**
+2. Generate a new token with scopes: `scenarios:read`, `scenarios:write`, `scenarios:run`
+3. Copy your **Team ID** from the URL when you're in your workspace: `https://eu1.make.com/{TEAM_ID}/...`
 
-- **Claude Desktop** — See configurations above
-- **VS Code (GitHub Copilot)** — Add to `.vscode/mcp.json`
-- **Cursor** — Add to MCP settings
-- **Claude Code** — Use `claude mcp add` command
-- **Windsurf** — Add to MCP configuration
+---
+
+### Step 3 — Use the vibecoder system (optional but recommended)
+
+Clone this repo and open it in Claude Code:
+
+```bash
+git clone https://github.com/yourusername/make-vibecoder.git
+cd make-vibecoder
+cp makemcpclaude.md CLAUDE.md
+claude
+```
+
+With `CLAUDE.md` in place, Claude Code automatically loads deep Make.com knowledge — including all tool patterns, validation rules, IML syntax, and the 5 specialist skills. No extra setup required.
 
 ---
 
 ## Usage
 
-Then ask your AI assistant things like:
+With the MCP server connected, ask Claude anything:
 
-> "Create a Make scenario that watches a Slack channel for new messages and logs them to a Google Sheet"
+> "Build a Make scenario that watches new Shopify orders and posts them to Slack"
+
+> "Create a webhook that receives form submissions, summarizes them with Claude AI, and adds a row to Google Sheets"
+
+> "Find a template for syncing Airtable to HubSpot and deploy it to my account"
 
 > "What modules does Make have for sending emails?"
 
-> "Validate this scenario blueprint..."
+> "Validate this blueprint JSON..."
 
-**Tip:** The AI will automatically call `tools_documentation` first to understand how to use the server effectively.
+Claude will automatically use the MCP tools to search templates, find modules, build blueprints, validate, and deploy — all without you writing any JSON.
 
-## Available Tools
+---
+
+## Available Tools (18 total)
+
+### Discovery
 
 | Tool | Description |
 |------|-------------|
-| `tools_documentation` | **START HERE** — Returns comprehensive documentation for all tools, prompts, and resources |
-| `search_modules` | Full-text search across 200+ Make.com modules |
-| `get_module` | Get detailed module info with parameters and docs |
-| `check_account_compatibility` | Check if modules are available in your current Make account/region (with suggestions) |
-| `validate_scenario` | Validate a scenario blueprint before deployment |
-| `create_scenario` | Deploy a scenario to Make.com via API |
-| `search_templates` | Search reusable scenario templates |
-| `list_apps` | List all apps with module counts |
+| `search_templates` | Search 266 real scenario blueprints by keyword, category, or difficulty |
+| `search_modules` | Full-text search across 559 modules |
+| `list_apps` | Browse all 170 apps with module counts |
+
+### Inspection
+
+| Tool | Description |
+|------|-------------|
+| `get_template` | Retrieve complete deployable blueprint JSON by template ID |
+| `get_module` | Full parameter schema, output fields, and docs for any module |
+| `tools_documentation` | Complete server capability overview — Claude calls this first |
+
+### Validation & Deployment
+
+| Tool | Description |
+|------|-------------|
+| `validate_scenario` | Check blueprint for errors before deploying |
+| `check_account_compatibility` | Verify modules are available in your Make account/region |
+| `create_scenario` | Deploy a validated blueprint to Make.com |
+
+### Lifecycle
+
+| Tool | Description |
+|------|-------------|
+| `health_check` | Verify API credentials and get team/org IDs |
+| `list_scenarios` | List all scenarios in your team |
+| `get_scenario` | Get an existing scenario's blueprint by ID |
+| `update_scenario` | Overwrite an existing scenario with a new blueprint |
+| `delete_scenario` | Delete a scenario (requires `confirm: true`) |
+| `run_scenario` | Manually trigger a scenario |
+| `list_executions` | View execution history and error logs |
+
+---
 
 ## Auto-Healing
 
-The `create_scenario` tool automatically fixes common issues in LLM-generated blueprints:
+`create_scenario` automatically fixes common issues in AI-generated blueprints so deployment just works:
 
-| Issue | Auto-Fix |
-|-------|----------|
-| Missing `metadata` section | Injects full metadata with `version`, `scenario` config, and `designer` |
-| Missing `metadata.designer` on modules | Adds `{ x: 0, y: 0 }` coordinates |
-| Router `filter` in route objects | Strips unsupported `filter` property (configure filters in Make.com UI) |
-| Missing `version` on modules | Left unset — Make.com auto-resolves the latest installed version |
-| Catalog mismatch (`IM007`, module not available) | Checks live modules in your account/region, auto-remaps close matches, retries deploy once |
+| Issue | Fix Applied |
+|-------|-------------|
+| Missing `metadata` section | Injects full metadata with scenario config and designer |
+| Missing designer coordinates on modules | Adds `{x, y}` positions for the visual editor |
+| Router `filter` property in route objects | Strips it — filters must be set in Make.com UI |
+| Module version conflicts | Injects verified versions from internal registry; strips unknown versions |
+| `builtin:Schedule` trigger | Converts to proper scenario scheduling |
 
-> **Tip:** Do NOT hardcode `"version": 1` on modules. Some apps (e.g., HTTP) are on v4+ and specifying the wrong version causes "Module not found" errors.
+---
 
-## MCP Prompts
+## The Vibecoder Skills System
 
-| Prompt | Description |
-|--------|-------------|
-| `build_scenario` | Guided workflow for creating a Make.com scenario from a natural language description |
-| `explain_module` | Get a detailed explanation of any Make.com module with usage examples |
+When you open this repo in Claude Code with `CLAUDE.md` present, Claude has access to 5 specialist skills that activate automatically based on what you're doing:
 
-## MCP Resources
+| Skill | Activates When... |
+|-------|-------------------|
+| `make-mcp-tools-expert` | Building or deploying a scenario, using any MCP tool |
+| `make-blueprint-syntax` | Writing blueprint JSON, using IML `{{...}}` expressions |
+| `make-validation-expert` | Validation fails, blueprint has errors, scenario won't deploy |
+| `make-workflow-patterns` | User describes a goal ("automate X when Y happens") |
+| `make-module-configuration` | Configuring a specific module, understanding parameters vs. mapper |
 
-| Resource URI | Description |
-|-------------|-------------|
-| `make://apps` | List of all available apps with module counts |
+Each skill is a focused markdown file in `.claude/skills/` containing deep domain knowledge — module patterns, error taxonomies, IML function references, and real blueprint examples.
 
-## CLI Usage
+The `CLAUDE.md` (copied from `makemcpclaude.md`) ties everything together: it tells Claude how to work silently, execute tool calls in parallel, check templates before building from scratch, and follow the 8-step deployment workflow.
 
-```bash
-make-mcp-server              # Start the MCP server (stdio transport)
-make-mcp-server --scrape     # Populate/refresh the module database
-make-mcp-server --version    # Print version
-make-mcp-server --help       # Show help
+---
+
+## How It Was Made
+
+### The Module Catalog (559 modules)
+
+The module catalog was built by extracting data from **265 real Make.com blueprint files** collected across two batches:
+
+- `Make example flows 1/` — 42 production blueprints
+- `Make example flows 2/` — 223 production blueprints
+
+Each blueprint was parsed by `extract-flows2.js` → `scrape-modules.ts` to extract module IDs, parameters, types, and descriptions. The resulting catalog covers 170 apps including Slack, Google Sheets, Shopify, HubSpot, Anthropic Claude, OpenAI, Airtable, Salesforce, Stripe, Notion, and 160+ more.
+
+### The Template Library (266 blueprints)
+
+The same blueprint files are loaded directly into the database as searchable templates. `populate-templates.ts` auto-categorizes each blueprint into one of 12 categories (`ai`, `crm`, `ecommerce`, `marketing`, `social-media`, `communication`, `project-management`, `data`, `file-management`, `automation`, `analytics`, `hr`) and assigns a difficulty level based on module count and complexity.
+
+### The Validation Engine
+
+`validate_scenario` runs a multi-pass check on blueprint JSON:
+- Structural validation (module IDs, required fields, JSON shape)
+- Module catalog lookup (against 559 known module IDs)
+- Forward reference detection (module N cannot reference module M where M > N)
+- Required parameter checks (using the `get_module` parameter registry)
+- Problematic module detection (openai:*, email:*, ai-provider:*)
+- Account compatibility check (live API check against your Make account)
+
+### The Skills System
+
+The 5 skill files in `.claude/skills/` were written to mirror the structure of the n8n-mcp skills system (in `n8n-skills/`), adapted entirely for Make.com. Each skill is a standalone markdown reference that Claude loads on demand, keeping the main CLAUDE.md concise while providing deep knowledge when needed.
+
+---
+
+## Repo Structure
+
 ```
+make-vibecoder/
+├── make mcp vibecoder/         # The MCP server (npm: make-mcp-server)
+│   ├── src/
+│   │   ├── mcp/server.ts       # All 18 MCP tool definitions
+│   │   ├── database/           # SQLite + FTS5 layer
+│   │   └── scrapers/           # Module catalog + template population
+│   ├── data/
+│   │   └── make-modules.db     # Pre-built SQLite database (bundled in npm)
+│   ├── dist/                   # Compiled output
+│   ├── Dockerfile
+│   └── package.json            # make-mcp-server v1.5.0
+│
+├── .claude/
+│   └── skills/                 # Claude specialist skills
+│       ├── make-mcp-tools-expert/SKILL.md
+│       ├── make-blueprint-syntax/SKILL.md
+│       ├── make-validation-expert/SKILL.md
+│       ├── make-workflow-patterns/SKILL.md
+│       └── make-module-configuration/SKILL.md
+│
+├── makemcpclaude.md            # → copy to CLAUDE.md when working in this repo
+│
+├── Make example flows 1/       # 42 source blueprints (catalog input)
+├── Make example flows 2/       # 223 source blueprints (catalog input)
+│
+├── make-skills/                # Reference materials and EXAMPLECLAUDE.md
+├── n8n-mcp/                    # n8n MCP server (inspiration + comparison)
+├── n8n-skills/                 # n8n skills (reference schema)
+└── README.md
+```
+
+---
 
 ## Environment Variables
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `MAKE_API_KEY` | For deployment | — | Make.com API key |
-| `MAKE_API_URL` | No | `https://eu1.make.com/api/v2` | Make.com API base URL |
-| `MAKE_TEAM_ID` | For deployment | — | Default team ID for scenario deployment |
-| `DATABASE_PATH` | No | `<package>/data/make-modules.db` | SQLite database file path |
-| `LOG_LEVEL` | No | `info` | Logging level: `debug`, `info`, `warn`, `error`, `silent` |
-| `MAKE_MODULE_CACHE_TTL_MS` | No | `300000` | Cache TTL for live module catalog checks (milliseconds) |
+| `MAKE_API_KEY` | For deployment | — | Make.com API token (Profile → API) |
+| `MAKE_TEAM_ID` | For deployment | — | Your Make team ID (from URL) |
+| `MAKE_API_URL` | No | `https://eu1.make.com/api/v2` | API base URL — change for US/AU zones |
+| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` \| `silent` |
+| `DATABASE_PATH` | No | `<package>/data/make-modules.db` | Custom SQLite path |
+
+**Zone URLs:**
+- EU: `https://eu1.make.com/api/v2` (default)
+- US: `https://us1.make.com/api/v2`
+- AU: `https://au1.make.com/api/v2`
+
+---
 
 ## Development
 
 ```bash
-npm run build         # Compile TypeScript + copy schema + add shebang
-npm run build:tsc     # TypeScript only (no packaging)
-npm run start:dev     # Start with tsx (no build needed)
-npm run dev           # Start with file watching
-npm run scrape        # Populate DB with tsx (dev)
-npm run scrape:prod   # Populate DB from compiled JS
-npm run smoke:compat  # One-command account compatibility + validation smoke check
-npm test              # Run all 43 tests
-npm run test:watch    # Run tests in watch mode
-```
+cd "make mcp vibecoder"
 
-### Publishing to npm
+# Install dependencies
+npm install
 
-```bash
-npm run prepublishOnly   # Build + populate DB + verify (runs automatically on npm publish)
-npm publish              # Publish to npm registry
-```
+# Build TypeScript → dist/
+npm run build
 
-## Testing
+# Rebuild SQLite database from catalog + blueprints
+npm run scrape
 
-The test suite includes 43 tests across 3 files:
-
-- **Database tests** (14 tests) — Insert, search, template operations, FTS5 queries
-- **Logger tests** (7 tests) — Stderr-only output, log levels, data serialization
-- **Server integration tests** (22 tests) — Full MCP protocol compliance via SDK client
-
-```bash
-npm test
-```
-
-### Fast Verification (2-3 minutes)
-
-Use this when you just changed validation/deploy logic and want confidence quickly:
-
-```bash
-# 1) Fast regression check
+# Run tests (43 tests: database, logger, server integration)
 npm test
 
-# 2) One-command smoke check (compatibility + validation)
-npm run smoke:compat
+# Dev mode with file watching
+npm run dev
 
-# 3) (Optional) Manual MCP exploration
-npm run start:dev
+# Start the MCP server directly
+npm start
 ```
 
-Then in your MCP client (Claude/Cursor/Copilot), run this sequence:
+**After editing TypeScript:** always `npm run build`, then reload the MCP server in Claude Desktop.
 
-1. `check_account_compatibility` with a known module, e.g. `gateway:CustomWebHook`
-2. `validate_scenario` with your blueprint
-3. `create_scenario` only if compatibility is good
+**After adding new blueprints:** update `populate-templates.ts` if the folder path changed, then `npm run scrape`.
 
-If step 1 reports incompatible modules, use the suggested replacement IDs before deploying.
+### Publishing
 
-## Architecture
-
+```bash
+npm run prepublishOnly   # Build + populate DB + verify
+npm publish              # Publish to npm as make-mcp-server
 ```
-src/
-├── mcp/
-│   └── server.ts          # MCP server with tools, prompts, resources
-├── database/
-│   ├── schema.sql         # SQLite + FTS5 schema
-│   └── db.ts              # Database access layer (npx-safe path resolution)
-├── scrapers/
-│   └── scrape-modules.ts  # Module data population (224 modules)
-└── utils/
-    └── logger.ts          # Structured stderr-only logger
-bin/
-├── make-mcp.js            # CLI entry point (npx, --help, --version, --scrape)
-└── postinstall.js         # Post-install verification
-scripts/
-├── build.js               # Build: tsc + copy schema + add shebang
-├── prepublish.js          # Publish prep: build + populate DB + verify
-└── smoke-compat.js        # Fast local smoke test for module compatibility + validation
-data/
-└── make-modules.db        # Pre-built SQLite database (bundled in npm package)
-tests/
-├── database.test.ts       # Database unit tests (14)
-├── logger.test.ts         # Logger unit tests (7)
-└── server.test.ts         # MCP integration tests (22)
-Dockerfile                 # Multi-stage Docker image
-```
+
+---
 
 ## Tech Stack
 
-- **TypeScript** + **Node.js** (ESM)
-- **@modelcontextprotocol/sdk** v1.26.0 — MCP protocol implementation
-- **better-sqlite3** — Synchronous SQLite with FTS5 full-text search
-- **zod** — Schema validation for tool parameters
-- **axios** — HTTP client for Make.com API
-- **vitest** — Test framework
+| Component | Technology |
+|-----------|-----------|
+| Language | TypeScript + Node.js (ESM) |
+| MCP protocol | `@modelcontextprotocol/sdk` |
+| Database | SQLite via `better-sqlite3` + FTS5 full-text search |
+| Schema validation | `zod` |
+| HTTP client | `axios` (Make.com API) |
+| Tests | `vitest` (43 tests) |
+| Packaging | Pre-built database bundled in npm |
 
-## Supported Apps (40+)
+---
 
-Google Sheets, Slack, OpenAI, Google Drive, Notion, Telegram Bot, HubSpot CRM, Gmail, Airtable, Tools, Flow Control, Google Calendar, Jira, Trello, Shopify, Google Docs, Microsoft Teams, Microsoft Outlook, Discord, Asana, monday.com, Salesforce, Stripe, GitHub, HTTP, Mailchimp, WordPress, Dropbox, Data Store, JSON, Twilio, Google Gemini AI, WhatsApp Business, Text Parser, Webhooks, Anthropic Claude, CSV, RSS, Email, Schedule
+## Roadmap
 
-## Author
+The MCP server is the foundation. The vibecoder repo will grow around it:
 
-Built by **[Daniel Shashko](https://www.linkedin.com/in/daniel-shashko/)**
+- **Vercel AI SDK agent** — A browser-based agent interface for building Make scenarios without Claude Desktop, deployable as a Vercel app
+- **Self-improving loops** — Claude agents that run scenarios, observe failures, and improve the blueprint autonomously
+- **Testing harness** — Automated execution testing with assertion-based validation of scenario outputs
+- **More templates** — Continuous expansion of the 266-template library from production flows
+
+---
+
+## Supported Apps (170+)
+
+Slack, Google Sheets, Gmail, Shopify, HubSpot CRM, Airtable, Notion, Google Drive, Google Docs, Google Calendar, Salesforce, Stripe, GitHub, Trello, Asana, Monday.com, Jira, Discord, Telegram, WhatsApp Business, Microsoft Teams, Microsoft Outlook, Mailchimp, ActiveCampaign, Typeform, Webflow, WordPress, Dropbox, OneDrive, Twilio, Anthropic Claude, OpenAI, Perplexity AI, Google Gemini AI, Leonardo AI, DeepL, Zendesk, Intercom, Pipedrive, Zoho CRM, Salesflare, Bitrix24, Revolut, Stripe, WooCommerce, BigCommerce, Magento, Facebook Pages, Instagram, LinkedIn, Twitter/X, YouTube, Pinterest, TikTok, Datastore, JSON, HTTP, Webhooks, Text Parser, CSV, RSS, and 100+ more.
+
+---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](make%20mcp%20vibecoder/LICENSE) for details.
+
+Community project. Not affiliated with Make.com / Celonis.
