@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { MakeDatabase } from '../database/db.js';
 import { populateTemplates } from './populate-templates.js';
+import { populateExamples } from './populate-examples.js';
 
 interface MakeModule {
     id: string;
@@ -4962,6 +4963,12 @@ export class ModuleScraper {
         if (templateResult.errors > 0) {
             console.log(`⚠️  Template errors: ${templateResult.errors}`);
         }
+
+        // Populate module examples from blueprint configs
+        console.log('\n🔄 Populating module examples...');
+        this.db.clearExamples();
+        const examplesResult = populateExamples(this.db);
+        console.log(`✅ Examples inserted: ${examplesResult.inserted} across ${examplesResult.modules} modules`);
 
         this.db.close();
     }

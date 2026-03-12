@@ -100,6 +100,44 @@ Complete parameter reference for every tool in the Make.com MCP server.
 
 ---
 
+## search_module_examples
+
+**Purpose:** Get real-world configuration examples for a module, extracted from 266 production blueprints. Use to see how a module is actually configured before building your own. Complements `get_module` (which also includes examples in non-essentials mode).
+
+**Parameters:**
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `moduleId` | string | ✅ | Module ID (e.g., `"slack:CreateMessage"`, `"google-sheets:addRow"`) |
+| `limit` | number | ❌ | Max examples to return (default: 5, max: 10) |
+
+**Returns:**
+```json
+{
+  "moduleId": "slack:CreateMessage",
+  "count": 3,
+  "note": "Real configurations from production blueprints. Sensitive values replaced with {{REDACTED}}.",
+  "examples": [
+    {
+      "source": "blueprint:Generate sentiment analysis from product surveys.blueprint.json",
+      "config": {
+        "text": "New survey response!\nRating: {{35.Star Rating}}\nComment: {{35.Question_2}}",
+        "channel": "DM4UHB7HT",
+        "channelType": "im"
+      }
+    }
+  ]
+}
+```
+
+**When to use:**
+- Before configuring a module from scratch — see what values others use
+- When `get_module` returns unfamiliar parameters — examples show real usage
+- To understand IML expression patterns (`{{N.field}}`) for a specific module
+
+**Coverage:** 502 examples across 291 modules. If a module returns `count: 0`, use `get_module` for the schema.
+
+---
+
 ## search_templates
 
 **Purpose:** Search 266 real blueprint templates by keyword/category/difficulty.

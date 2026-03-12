@@ -93,7 +93,8 @@ describe('MCP Server Protocol', () => {
         expect(toolNames).toContain('health_check');
         expect(toolNames).toContain('run_scenario');
         expect(toolNames).toContain('list_executions');
-        expect(result.tools.length).toBe(16);
+        expect(toolNames).toContain('search_module_examples');
+        expect(result.tools.length).toBe(17);
     });
 
     it('should call tools_documentation', async () => {
@@ -168,6 +169,34 @@ describe('MCP Server Protocol', () => {
         // Hint must guide callers to full schema
         expect(typeof data.hint).toBe('string');
         expect(data.hint).toContain('required parameters only');
+    });
+
+    it('should return examples for a known module', async () => {
+        const result = await client.callTool({
+            name: 'search_module_examples',
+            arguments: { moduleId: 'slack:CreateMessage' },
+        });
+
+        const data = JSON.parse((result.content as any[])[0].text);
+        expect(data.moduleId).toBe('slack:CreateMessage');
+        expect(typeof data.count).toBe('number');
+        expect(Array.isArray(data.examples)).toBe(true);
+        if (data.count > 0) {
+            expect(data.examples[0].source).toMatch(/^blueprint:/);
+            expect(typeof data.examples[0].config).toBe('object');
+        }
+    });
+
+    it('should return empty examples gracefully for unknown module', async () => {
+        const result = await client.callTool({
+            name: 'search_module_examples',
+            arguments: { moduleId: 'nonexistent:Module' },
+        });
+
+        const data = JSON.parse((result.content as any[])[0].text);
+        expect(data.count).toBe(0);
+        expect(data.examples).toEqual([]);
+        expect(result.isError).toBeFalsy();
     });
 
     it('should return isError for unknown module', async () => {

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2026-03-12
+
+### Added
+- **`search_module_examples` tool** — Returns real-world module configurations extracted from production blueprints. 502 examples across 291 modules, sensitive values redacted.
+- **`populate-examples.ts` scraper** — Extracts and scores module configs from all blueprints (merger of `mapper` + `parameters`), deduplicates, stores top-5 per module in the `examples` table. Runs automatically as part of `npm run scrape`.
+- **`examples` table** populated for the first time — `get_module` (non-essentials mode) now includes real examples in its response.
+- **3 new public methods on `MakeDatabase`** — `insertExample`, `clearExamples`, `runInTransaction` — replacing direct `db.db` access in scrapers.
+
+### Changed
+- `npm run scrape` now also populates the `examples` table after modules and templates.
+- `tools_documentation` updated to list `search_module_examples`.
+
 ## [1.5.0] - 2026-03-10
 
 ### Added
@@ -20,6 +32,31 @@ All notable changes to this project will be documented in this file.
 - `search_templates` now returns `modulesUsed` array and a `hint` for using `get_template`
 - `list_apps` and `search_modules('*')` now support up to 1000 results (was 500)
 - Quick start guide now recommends templates-first workflow (faster path to deployment)
+
+## [1.3.2] - 2026-03-09
+
+### Added
+- **`list_scenarios` tool** — Lists all scenarios in the Make.com account with optional filtering by scheduling type (`on-demand`, `immediately`, `indefinitely`). Returns ID, name, description, scheduling, status, creation date, last edit, operation count, packages used, and creator. Falls back to `MAKE_TEAM_ID`/`MAKE_ORGANIZATION_ID` env vars when not provided.
+- **`API_INTEGRATION.md`** — Documents working vs. permission-blocked Make.com API endpoints and comparison with the official Make MCP
+- **`tools_documentation`** updated to include `list_scenarios` and API permission tips
+
+## [1.4.0] - 2026-02-09
+
+### Added
+- **Blueprint extraction system** — Automated pipeline that parses Make.com blueprint JSON files, extracts parameter schemas from `metadata.expect` arrays, and generates TypeScript module definitions
+- **`src/scrapers/extract-from-blueprints.ts`** — Core extraction engine (476 lines): parses 42 production blueprints, maps 30+ blueprint parameter types to internal types, deduplicates and aggregates across blueprints
+- **`src/scrapers/module-mapping.ts`** — Type mapping utilities for blueprint → internal type conversion
+- **`merge-tiers.js`** — Automated tier merging script for controlled rollout
+- **91 new modules** extracted from 42 production blueprints — 203 → 315 total (+55%)
+  - Tier 1 (≥5 uses): 3 modules
+  - Tier 2 (2–4 uses): 21 modules
+  - Tier 3 (1 use): 67 modules
+- **18 new apps**: PostgreSQL, QuickBooks, Microsoft Excel, Calendly, Browse AI, ElevenLabs, Gong, Canva, ClickUp, Clearbit, Buffer, Salesloft, Sendinblue, YouTube, LinkedIn Lead Gen Forms, LinkedIn Offline Conversions, Anthropic (Claude), Apify
+- **Real Make.com module IDs** corrected from blueprint data: `slack:CreateMessage`, `openai-gpt-3:CreateCompletion`, `google-sheets:addRow`, `notion:watchDatabaseItems`
+- **Generated artifacts**: `data/tier1-modules.ts`, `data/tier2-modules.ts`, `data/tier3-modules.ts`
+
+### Changed
+- `scrape-modules.ts` expanded with 91 additional modules from the tier extraction
 
 ## [1.3.1] - 2026-02-07
 

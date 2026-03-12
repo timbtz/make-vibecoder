@@ -253,6 +253,20 @@ export class MakeDatabase {
         return result;
     }
 
+    insertExample(moduleId: string, config: Record<string, any>, source: string) {
+        this.db.prepare(
+            'INSERT INTO examples (module_id, config, source) VALUES (?, ?, ?)'
+        ).run(moduleId, JSON.stringify(config), source);
+    }
+
+    clearExamples() {
+        this.db.prepare('DELETE FROM examples').run();
+    }
+
+    runInTransaction(fn: () => void) {
+        this.db.transaction(fn)();
+    }
+
     insertTemplate(template: any) {
         const modulesUsedJson = JSON.stringify(template.modules_used || []);
 

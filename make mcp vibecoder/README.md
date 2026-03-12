@@ -9,7 +9,7 @@
 
 An MCP server + Claude agent system for building, validating, and deploying [Make.com](https://make.com) automation scenarios through conversation. Describe what you want to automate — Claude does the rest.
 
-**Search 559 modules across 170 apps. Use 266 real blueprint templates. Deploy validated scenarios to Make.com in seconds.**
+**Search 559 modules across 170 apps. Use 266 real blueprint templates. Access 502 real-world module examples. Deploy validated scenarios to Make.com in seconds.**
 
 ---
 
@@ -147,7 +147,7 @@ Claude will automatically use the MCP tools to search templates, find modules, b
 
 ---
 
-## Available Tools (18 total)
+## Available Tools (17 total)
 
 ### Discovery
 
@@ -162,7 +162,8 @@ Claude will automatically use the MCP tools to search templates, find modules, b
 | Tool | Description |
 |------|-------------|
 | `get_template` | Retrieve complete deployable blueprint JSON by template ID |
-| `get_module` | Full parameter schema, output fields, and docs for any module |
+| `get_module` | Full parameter schema, output fields, real examples, and docs for any module |
+| `search_module_examples` | Get real-world module configs from 266 production blueprints (502 examples across 291 modules) |
 | `tools_documentation` | Complete server capability overview — Claude calls this first |
 
 ### Validation & Deployment
@@ -234,6 +235,10 @@ Each blueprint was parsed by `extract-flows2.js` → `scrape-modules.ts` to extr
 
 The same blueprint files are loaded directly into the database as searchable templates. `populate-templates.ts` auto-categorizes each blueprint into one of 12 categories (`ai`, `crm`, `ecommerce`, `marketing`, `social-media`, `communication`, `project-management`, `data`, `file-management`, `automation`, `analytics`, `hr`) and assigns a difficulty level based on module count and complexity.
 
+### The Module Examples Table (502 examples)
+
+`populate-examples.ts` (runs as part of `npm run scrape`) extracts per-module configurations from every blueprint and stores them in the `examples` table — 502 real configurations across 291 modules. Sensitive values are redacted. `get_module` automatically includes these examples in its full response. `search_module_examples` exposes them directly for when you want real configurations without the full schema.
+
 ### The Validation Engine
 
 `validate_scenario` runs a multi-pass check on blueprint JSON:
@@ -256,9 +261,9 @@ The 5 skill files in `.claude/skills/` were written to mirror the structure of t
 make-vibecoder/
 ├── make mcp vibecoder/         # The MCP server (npm: make-mcp-server)
 │   ├── src/
-│   │   ├── mcp/server.ts       # All 18 MCP tool definitions
+│   │   ├── mcp/server.ts       # All 17 MCP tool definitions
 │   │   ├── database/           # SQLite + FTS5 layer
-│   │   └── scrapers/           # Module catalog + template population
+│   │   └── scrapers/           # Module catalog, template + example population
 │   ├── data/
 │   │   └── make-modules.db     # Pre-built SQLite database (bundled in npm)
 │   ├── dist/                   # Compiled output

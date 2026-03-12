@@ -112,6 +112,7 @@ When new blueprint JSON files are available in a new folder:
 - Use `ok(...)` and `fail(...)` helper functions for return values
 - Always update `tools_documentation` if a new tool is added (the tools object around line 500)
 - Run `npm run build` and ask the user to reload the MCP server before testing
+- **Always add an entry to `CHANGELOG.md`** for any new tool, scraper, or database change
 
 ### What to do when modifying the database schema
 - Edit `src/database/schema.sql`

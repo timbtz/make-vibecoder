@@ -49,6 +49,8 @@ get_module({moduleId: "shopify:WatchNewOrders"})
 // Returns all parameters, output fields, connection type
 ```
 
+> After `get_module`, call `search_module_examples({moduleId: "..."})` to see real-world configurations from production blueprints.
+
 ### Step 4: Check output_fields for mapping
 ```javascript
 // output_fields shows what {{moduleId.field}} expressions are valid
@@ -56,6 +58,31 @@ get_module({moduleId: "shopify:WatchNewOrders"})
 // output_fields: [{name: "id", ...}, {name: "total_price", ...}, ...]
 // → can use {{1.id}}, {{1.total_price}} in next modules
 ```
+
+---
+
+---
+
+## Strategy 3: Module Examples (When You Need Real Configs)
+
+After finding your modules, check real-world examples from 266 production blueprints:
+
+```javascript
+// See how google-sheets:addRow is actually configured
+search_module_examples({moduleId: "google-sheets:addRow"})
+// Returns up to 5 real configs with actual field names and IML expressions
+
+// Get more examples
+search_module_examples({moduleId: "slack:CreateMessage", limit: 10})
+```
+
+**Use this when:**
+- The module has many parameters and you're unsure which ones matter
+- You want to see real `{{N.field}}` expression patterns
+- `get_module` output_fields don't match what you expect to map
+
+**Coverage:** 502 examples across 291 modules (from `search_modules` results).
+Note: `get_module` already includes examples in its full response — `search_module_examples` is for when you want examples only.
 
 ---
 

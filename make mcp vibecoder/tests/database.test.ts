@@ -170,10 +170,46 @@ describe('MakeDatabase', () => {
         });
     });
 
-    describe('getModuleExamples', () => {
+    describe('examples', () => {
         it('should return empty array when no examples exist', () => {
             const examples = db.getModuleExamples('test:Action1');
             expect(examples).toEqual([]);
+        });
+
+        it('insertExample should store and retrieve an example', () => {
+            db.insertExample('test:Action1', { input: 'hello', count: 3 }, 'blueprint:test.json');
+
+            const examples = db.getModuleExamples('test:Action1');
+            expect(examples.length).toBe(1);
+            expect(JSON.parse(examples[0].config)).toEqual({ input: 'hello', count: 3 });
+            expect(examples[0].source).toBe('blueprint:test.json');
+        });
+
+        it('insertExample should respect limit param', () => {
+            db.insertExample('test:Action1', { input: 'second' }, 'blueprint:b.json');
+            db.insertExample('test:Action1', { input: 'third' }, 'blueprint:c.json');
+
+            const limited = db.getModuleExamples('test:Action1', 2);
+            expect(limited.length).toBe(2);
+
+            const all = db.getModuleExamples('test:Action1', 10);
+            expect(all.length).toBe(3);
+        });
+
+        it('clearExamples should remove all examples', () => {
+            db.clearExamples();
+            const examples = db.getModuleExamples('test:Action1');
+            expect(examples).toEqual([]);
+        });
+
+        it('runInTransaction should commit all inserts atomically', () => {
+            db.runInTransaction(() => {
+                db.insertExample('test:Action1', { x: 1 }, 'blueprint:tx1.json');
+                db.insertExample('test:Action1', { x: 2 }, 'blueprint:tx2.json');
+            });
+
+            const examples = db.getModuleExamples('test:Action1', 10);
+            expect(examples.length).toBe(2);
         });
     });
 });

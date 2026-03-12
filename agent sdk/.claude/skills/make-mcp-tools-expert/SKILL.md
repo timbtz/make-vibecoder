@@ -14,7 +14,7 @@ Master guide for using the Make.com MCP server to build and deploy automation sc
 The Make MCP server provides tools in four categories:
 
 1. **Discovery** — Find modules and templates: `search_modules`, `search_templates`, `list_apps`
-2. **Inspection** — Get details: `get_module`, `get_template`, `tools_documentation`
+2. **Inspection** — Get details: `get_module`, `get_template`, `search_module_examples`, `tools_documentation`
 3. **Validation & Deployment** — `check_account_compatibility`, `validate_scenario`, `create_scenario`
 4. **Lifecycle** — `list_scenarios`, `get_scenario`, `update_scenario`, `delete_scenario`, `run_scenario`, `list_executions`, `health_check`
 
@@ -59,6 +59,7 @@ Not sure?
 | `tools_documentation` | First call — understand all capabilities | none |
 | `search_modules` | Find modules by keyword | `query`, `app` (optional) |
 | `get_module` | Full parameter schema for a module | `moduleId`, `essentials` (optional) |
+| `search_module_examples` | Get real-world configs from 266 production blueprints | `moduleId`, `limit` (optional) |
 | `search_templates` | Find real blueprint templates | `query`, `category`, `difficulty` |
 | `get_template` | Get complete deployable blueprint JSON | `id` |
 | `list_apps` | Browse all 170 apps | none |
@@ -90,6 +91,7 @@ search_templates({query: "shopify slack"})
 ```
 search_modules({query: "google sheets"})
   → get_module({moduleId: "google-sheets:ActionAddRow"})
+  → search_module_examples({moduleId: "google-sheets:addRow"})  // see real configs
   → build blueprint JSON
   → check_account_compatibility({moduleIds: ["google-sheets:ActionAddRow"]})
   → validate_scenario({blueprint: ...})
@@ -386,6 +388,6 @@ list_executions({scenarioId: 4799001})
 
 ## See Also
 
-- [TOOL_REFERENCE.md](TOOL_REFERENCE.md) — Full parameter reference for every tool
+- [TOOL_REFERENCE.md](TOOL_REFERENCE.md) — Full parameter reference for every tool, including the `search_module_examples` spec
 - [SEARCH_GUIDE.md](SEARCH_GUIDE.md) — Module and template discovery strategies
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) — End-to-end deployment workflow

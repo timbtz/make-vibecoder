@@ -159,7 +159,14 @@ get_module({moduleId: "shopify:WatchNewOrders"})
 //   {name: "customer.email", label: "Customer Email"},
 //   ...
 // ]
+
+// See how this module is actually configured in real production blueprints
+search_module_examples({moduleId: "shopify:WatchNewOrders"})
+// Returns up to 5 real configs from 266 production blueprints
+// 502 examples available across 291 modules
 ```
+
+`get_module` already includes examples in its full (non-essentials) response. Use `search_module_examples` when you want examples only, without the full schema.
 
 In the next module, reference them:
 ```json

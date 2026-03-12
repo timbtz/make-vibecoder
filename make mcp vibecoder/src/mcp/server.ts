@@ -505,6 +505,7 @@ server.registerTool('tools_documentation', {
             tools_documentation: 'Returns this documentation. Call first.',
             search_modules: 'Full-text search across 559 Make.com modules. Params: query (required), app (optional filter).',
             get_module: 'Get detailed module info with all parameters. Params: moduleId (e.g., "slack:ActionPostMessage").',
+            search_module_examples: 'Get real-world config examples extracted from 266 production blueprints. Params: moduleId, limit (optional).',
             check_account_compatibility: 'Check whether modules are available in your current Make account/region using the live Make modules API.',
             validate_scenario: 'Validate a scenario blueprint before deployment. Checks structure, modules, and required params.',
             create_scenario: 'Deploy a validated scenario to Make.com via API. Requires MAKE_API_KEY.',
@@ -654,6 +655,47 @@ server.registerTool('get_module', {
     } catch (error: any) {
         logger.error('get_module failed', { moduleId, error: error.message });
         return fail(`Failed to retrieve module: ${error.message}`);
+    }
+});
+
+// ══════════════════════════════════════════════════════════════
+// TOOL: search_module_examples
+// ══════════════════════════════════════════════════════════════
+
+server.registerTool('search_module_examples', {
+    title: 'Search Module Examples',
+    description:
+        'Returns real-world configuration examples extracted from 266 production Make.com blueprints. ' +
+        'Use this to see how a module is actually configured in real scenarios before building your own. ' +
+        'Each example shows the exact mapper/parameters used, with sensitive values redacted.',
+    inputSchema: {
+        moduleId: z.string().min(1).max(200).describe('Module ID to get examples for (e.g., "slack:CreateMessage", "google-sheets:addRow")'),
+        limit: z.number().int().min(1).max(10).optional().describe('Max examples to return (default 5)'),
+    },
+}, async ({ moduleId, limit = 5 }) => {
+    try {
+        const sanitizedId = moduleId.replace(/[^\w:.-]/g, '');
+        const examples = db.getModuleExamples(sanitizedId, limit);
+        if (examples.length === 0) {
+            return ok({
+                moduleId: sanitizedId,
+                count: 0,
+                note: 'No examples found for this module in the blueprint collection. Try get_module for the parameter schema.',
+                examples: [],
+            });
+        }
+        return ok({
+            moduleId: sanitizedId,
+            count: examples.length,
+            note: 'Real configurations from production blueprints. Sensitive values replaced with {{REDACTED}}.',
+            examples: examples.map((ex: any) => ({
+                source: ex.source,
+                config: JSON.parse(ex.config),
+            })),
+        });
+    } catch (error: any) {
+        logger.error('search_module_examples failed', { moduleId, error: error.message });
+        return fail(`Failed to retrieve examples: ${error.message}`);
     }
 });
 
