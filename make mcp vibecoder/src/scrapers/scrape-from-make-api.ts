@@ -62,13 +62,22 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T | null
             return await fn();
         } catch (err: any) {
             const status = err?.response?.status;
-            if (status === 404 || status === 403) return null;
+            if (status === 404 || status === 403) {
+                if (process.env['MAKE_DEBUG']) {
+                    console.debug(`  skip ${status}: ${err?.config?.url}`);
+                }
+                return null;
+            }
             if (status === 429) {
                 const backoff = 60_000 * (i + 1);
                 console.warn(`  ⚠ Rate limited (429). Waiting ${backoff / 1000}s before retry ${i + 1}/${retries}...`);
                 await sleep(backoff);
             } else if (i < retries) {
                 await sleep(2_000 * (i + 1));
+            } else {
+                // Last attempt failed — log actual error details
+                const msg = err?.response?.data?.message || err?.message || 'unknown';
+                console.warn(`  ✗ Failed after ${retries + 1} attempts: HTTP ${status ?? 'N/A'} — ${msg}`);
             }
         }
     }
@@ -232,6 +241,29 @@ export async function scrapeFromMakeApiAndRebuild(db: MakeDatabase): Promise<Api
     // Ensure DB schema has all required columns
     db.addMissingColumns();
 
+    // ── Phase 00: Connectivity check ──────────────────────────────────────
+    console.log('\nPhase 00: Testing API connectivity...');
+    let connectOk = false;
+    try {
+        const testResp = await axios.get(`${BASE_URL}/users/me`, {
+            headers: apiHeaders(),
+            timeout: 10_000,
+        });
+        const email = testResp.data?.user?.email || testResp.data?.email || '(unknown)';
+        console.log(`✅ API reachable. Authenticated as: ${email}\n`);
+        connectOk = true;
+    } catch (err: any) {
+        const status = err?.response?.status;
+        const msg = err?.response?.data?.message || err?.message || 'unknown error';
+        console.error(`❌ API connectivity test failed: HTTP ${status ?? 'N/A'} — ${msg}`);
+        console.error(`   URL: ${BASE_URL}/users/me`);
+        console.error(`   Key: ${API_KEY ? API_KEY.slice(0, 8) + '...' : '(not set)'}`);
+        console.error(`   Org: ${ORG_ID || '(not set)'}`);
+        if (status === 401) console.error('   → Invalid or expired API key.');
+        if (status === 403) console.error('   → Key valid but lacks required permissions.');
+        process.exit(1);
+    }
+
     // ── Phase 0: App Discovery ────────────────────────────────────────────
     console.log('\nPhase 0: Discovering app slugs...');
     const appVersionMap = appSlugsFromCatalog();
@@ -261,6 +293,12 @@ export async function scrapeFromMakeApiAndRebuild(db: MakeDatabase): Promise<Api
         const listResult = await fetchModuleList(appSlug, preferredVersion);
         if (!listResult) {
             failedApps++;
+            if (failedApps === 1) {
+                console.error(`  ✗ First failed app: ${appSlug}@${preferredVersion}`);
+                console.error(`    URL tried: ${BASE_URL}/apps/${appSlug}@${preferredVersion}/modules`);
+                console.error(`    API Key:   ${API_KEY ? API_KEY.slice(0, 8) + '...' : '(not set)'}`);
+                console.error(`    Org ID:    ${ORG_ID || '(not set)'}`);
+            }
             continue;
         }
 

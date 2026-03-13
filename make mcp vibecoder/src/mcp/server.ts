@@ -904,6 +904,8 @@ function validateExpressions(
 ): void {
     const config = flowModule.parameters || flowModule.mapper || {};
     const expressionRegex = /\{\{(\d+)\.([^}]+)\}\}/g;
+    // Build a Set of valid module IDs (Make uses .id, not array position)
+    const validModuleIds = new Set(flow.map((m: any) => m.id));
 
     function checkValue(value: any, path: string) {
         if (typeof value === 'string' && value.includes('{{')) {
@@ -913,16 +915,16 @@ function validateExpressions(
                 const refModuleIndex = parseInt(match[1], 10);
                 const field = match[2];
 
-                // Check if referenced module index exists
-                if (refModuleIndex >= flow.length) {
-                    warnings.push(
-                        `${pos} (${flowModule.module}): Expression {{${refModuleIndex}.${field}}} in "${path}" ` +
-                        `references non-existent module ${refModuleIndex}. Flow only has ${flow.length} module(s).`
-                    );
-                } else if (refModuleIndex < 0) {
+                // Check if referenced module ID exists in the flow
+                if (refModuleIndex < 0) {
                     warnings.push(
                         `${pos} (${flowModule.module}): Expression {{${refModuleIndex}.${field}}} in "${path}" ` +
                         `has invalid negative module index.`
+                    );
+                } else if (!validModuleIds.has(refModuleIndex)) {
+                    warnings.push(
+                        `${pos} (${flowModule.module}): Expression {{${refModuleIndex}.${field}}} in "${path}" ` +
+                        `references non-existent module ID ${refModuleIndex}.`
                     );
                 }
             }

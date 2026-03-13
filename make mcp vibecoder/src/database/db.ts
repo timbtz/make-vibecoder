@@ -195,7 +195,7 @@ export class MakeDatabase {
             UPDATE modules SET
                 output_fields = COALESCE(?, output_fields),
                 connection_type = COALESCE(?, connection_type),
-                is_deprecated = ?,
+                is_deprecated = COALESCE(?, is_deprecated),
                 scope = COALESCE(?, scope),
                 listener = COALESCE(?, listener),
                 returns_multiple = COALESCE(?, returns_multiple),
@@ -204,7 +204,7 @@ export class MakeDatabase {
         `).run(
             enrichment.output_fields ? JSON.stringify(enrichment.output_fields) : null,
             enrichment.connection_type || null,
-            enrichment.is_deprecated ? 1 : 0,
+            enrichment.is_deprecated != null ? (enrichment.is_deprecated ? 1 : 0) : null,
             enrichment.scope ? JSON.stringify(enrichment.scope) : null,
             enrichment.listener != null ? (enrichment.listener ? 1 : 0) : null,
             enrichment.returns_multiple != null ? (enrichment.returns_multiple ? 1 : 0) : null,
