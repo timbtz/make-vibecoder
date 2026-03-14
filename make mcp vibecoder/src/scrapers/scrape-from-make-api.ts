@@ -241,26 +241,54 @@ export async function scrapeFromMakeApiAndRebuild(db: MakeDatabase): Promise<Api
     // Ensure DB schema has all required columns
     db.addMissingColumns();
 
-    // ── Phase 00: Connectivity check ──────────────────────────────────────
+    // ── Phase 00: Connectivity + endpoint availability check ──────────────
     console.log('\nPhase 00: Testing API connectivity...');
-    let connectOk = false;
+
+    // Step 1: Verify the API key is valid
     try {
         const testResp = await axios.get(`${BASE_URL}/users/me`, {
             headers: apiHeaders(),
             timeout: 10_000,
         });
-        const email = testResp.data?.user?.email || testResp.data?.email || '(unknown)';
-        console.log(`✅ API reachable. Authenticated as: ${email}\n`);
-        connectOk = true;
+        const user = testResp.data?.user || testResp.data;
+        const email = user?.email || '(unknown)';
+        console.log(`✅ API key valid. Authenticated as: ${email}`);
     } catch (err: any) {
         const status = err?.response?.status;
         const msg = err?.response?.data?.message || err?.message || 'unknown error';
-        console.error(`❌ API connectivity test failed: HTTP ${status ?? 'N/A'} — ${msg}`);
+        console.error(`❌ Auth check failed: HTTP ${status ?? 'N/A'} — ${msg}`);
         console.error(`   URL: ${BASE_URL}/users/me`);
         console.error(`   Key: ${API_KEY ? API_KEY.slice(0, 8) + '...' : '(not set)'}`);
         console.error(`   Org: ${ORG_ID || '(not set)'}`);
         if (status === 401) console.error('   → Invalid or expired API key.');
         if (status === 403) console.error('   → Key valid but lacks required permissions.');
+        process.exit(1);
+    }
+
+    // Step 2: Check whether the module-list endpoint exists (Make does NOT expose this publicly)
+    try {
+        await axios.get(`${BASE_URL}/apps/google-sheets@2/modules`, {
+            headers: apiHeaders(),
+            timeout: 8_000,
+        });
+        console.log('✅ Module-list endpoint available. Proceeding with API rebuild.\n');
+    } catch (err: any) {
+        const status = err?.response?.status;
+        if (status === 404) {
+            console.error('');
+            console.error('⚠️  Make.com does not expose the app module catalog via the public API.');
+            console.error(`   Tested: ${BASE_URL}/apps/google-sheets@2/modules → HTTP 404`);
+            console.error('');
+            console.error('   The /apps/{name}@{version}/modules endpoints are internal to Make.com');
+            console.error('   and are not available to regular user API keys.');
+            console.error('');
+            console.error('   The static catalog (npm run scrape) is the correct approach.');
+            console.error('   Use npm run scrape to rebuild from the hand-maintained module list.');
+            process.exit(1);
+        }
+        // Non-404 error (network, 401, etc.) — still fail with details
+        const msg = err?.response?.data?.message || err?.message || 'unknown error';
+        console.error(`❌ Module endpoint probe failed: HTTP ${status ?? 'N/A'} — ${msg}`);
         process.exit(1);
     }
 

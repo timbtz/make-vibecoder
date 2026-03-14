@@ -89,6 +89,7 @@ function scoreConfig(config: Record<string, any>): number {
 function getBlueprintFolders(): string[] {
     const projectRoot = path.join(__dirname, '..', '..', '..');
     const candidates = [
+        path.join(projectRoot, 'Make example Blueprints'),
         path.join(projectRoot, 'Make example flows'),
         path.join(projectRoot, 'Make example flows 1'),
         path.join(projectRoot, 'Make example flows 2'),

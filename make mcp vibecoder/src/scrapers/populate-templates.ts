@@ -88,6 +88,7 @@ function getDescription(blueprint: any, name: string): string {
 function getBlueprintFolders(): string[] {
     const projectRoot = path.join(__dirname, '..', '..', '..');
     const folders = [
+        path.join(projectRoot, 'Make example Blueprints'),
         path.join(projectRoot, 'Make example flows'),
         path.join(projectRoot, 'Make example flows 1'),
         path.join(projectRoot, 'Make example flows 2'),
