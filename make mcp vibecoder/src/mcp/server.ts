@@ -44,6 +44,38 @@ function resolveServerVersion(): string {
 const VERSION = resolveServerVersion();
 const MODULE_CACHE_TTL_MS = Number(process.env['MAKE_MODULE_CACHE_TTL_MS'] || 5 * 60 * 1000);
 
+// ══════════════════════════════════════════════════════════════
+// GOTCHAS MAP — loaded once at startup from data/GOTCHAS.md
+// Keys: module IDs (e.g. "slack:ActionPostMessage")
+// Values: array of gotcha strings
+// ══════════════════════════════════════════════════════════════
+
+function loadGotchasMap(): Map<string, string[]> {
+    const map = new Map<string, string[]>();
+    try {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        const gotchasPath = path.resolve(__dirname, '..', '..', 'data', 'GOTCHAS.md');
+        if (!fs.existsSync(gotchasPath)) return map;
+        const content = fs.readFileSync(gotchasPath, 'utf-8');
+        let currentId: string = '';
+        for (const line of content.split('\n')) {
+            const header = line.match(/^##\s+(\S+)/);
+            if (header && header[1]) {
+                currentId = header[1];
+                if (!map.has(currentId)) map.set(currentId, []);
+            } else if (currentId && line.startsWith('- ')) {
+                map.get(currentId)!.push(line.slice(2).trim());
+            }
+        }
+    } catch {
+        // Non-fatal — gotchas are enhancement only
+    }
+    return map;
+}
+
+const gotchasMap: Map<string, string[]> = loadGotchasMap();
+
 type LiveModuleCatalog = {
     fetchedAt: number;
     ids: Set<string>;
@@ -87,7 +119,7 @@ const VERIFIED_MODULE_VERSIONS: Record<string, number> = {
     'util:GetVariable': 1,
     'util:SetMultipleVariables': 1,
     // Slack
-    'slack:ActionPostMessage': 1,
+    'slack:CreateMessage': 4,
     // Datastore
     'datastore:ActionGetRecord': 1,
     'datastore:ActionAddRecord': 1,
@@ -649,6 +681,10 @@ server.registerTool('get_module', {
         }
         if (essentials) {
             response.hint = 'Showing required parameters only. Call without essentials:true for full schema.';
+        }
+        const gotchas = gotchasMap.get(sanitizedId);
+        if (gotchas && gotchas.length > 0) {
+            response.gotchas = gotchas;
         }
 
         logger.debug('get_module', { moduleId: sanitizedId });

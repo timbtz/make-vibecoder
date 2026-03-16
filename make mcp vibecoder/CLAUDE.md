@@ -38,6 +38,10 @@ make mcp vibecoder/
 │   ├── make-modules.db                  # SQLite database (source of truth at runtime)
 │   ├── official-mcp-schemas.json        # Authoritative schemas from Make MCP harvest (565 entries, 116 with full params)
 │   ├── additional-nodes-schema.json     # Supplemental schemas not yet in official-mcp-schemas.json
+│   ├── GOTCHAS.md                       # Module behavioral gotchas — loaded at startup into get_module responses
+│   ├── SERVER-CHANGES.md               # ⚠️ Server bug/fix backlog — READ THIS before touching server.ts
+│   ├── autoresearch-log.md             # Autoresearch session outcomes
+│   ├── autoresearch/                   # Tracker JSON files (sessions, attempts, corrections)
 │   ├── flows2-new-modules.ts            # Generated code from "Make example flows 2"
 │   └── tier1/2/3-modules.ts            # Generated code from "Make example flows 1"
 ├── dist/                                # Compiled output (run npm run build to update)
@@ -50,6 +54,22 @@ The blueprint source folders live at the repo root (sibling to `make mcp vibecod
 - `Make example Blueprints/` — 224 blueprints (batch 3, added v1.8.0)
 
 > **Note:** `Make example flows/` and `Make example flows 2/` referenced in older docs no longer exist as separate folders. The active folder is `Make example Blueprints/`.
+
+---
+
+## Server Bug Backlog
+
+Before modifying `server.ts`, read **`data/SERVER-CHANGES.md`** first.
+It contains:
+- `[ ]` **Pending bugs** discovered during autoresearch sessions (with root cause, file + line, and exact fix instructions)
+- `[x]` **Applied fixes** (for history)
+
+Key pending items as of 2026-03-16:
+- **BUG-001** — `scheduling` key leaks into blueprint JSON → HTTP 400 from Make API
+- **BUG-002** — Webhook triggers always deploy with `on-demand` scheduling instead of `immediately`
+- **BUG-003** — `get_scenario` rejects numeric IDs (Zod coercion missing)
+- **SCHEMA-001** — `slack:ActionPostMessage` stub in catalog (wrong module ID)
+- **INFRA-001** — `VERIFIED_MODULE_VERSIONS` incomplete → HTTP 500 for many real modules
 
 ---
 

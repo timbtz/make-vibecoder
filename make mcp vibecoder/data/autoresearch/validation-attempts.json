@@ -1,0 +1,31 @@
+[
+  {
+    "timestamp": "2026-03-16T12:01:04.544Z",
+    "testCase": "Recipe 1: webhook→slack",
+    "attemptNumber": 1,
+    "blueprintValid": false,
+    "moduleValidations": [
+      {
+        "module": "slack:ActionPostMessage",
+        "appName": "slack",
+        "moduleName": "ActionPostMessage",
+        "valid": false,
+        "errors": [
+          {
+            "field": "moduleId",
+            "error": "Module does not exist",
+            "actual": "slack:ActionPostMessage",
+            "expected": "slack:CreateMessage"
+          },
+          {
+            "field": "version",
+            "error": "Wrong version in VERIFIED_MODULE_VERSIONS",
+            "actual": "1",
+            "expected": "4"
+          }
+        ]
+      }
+    ],
+    "overallResult": "failed"
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "timestamp": "2026-03-16T12:01:04.545Z",
+    "module": "slack:ActionPostMessage",
+    "field": "moduleId",
+    "was": "slack:ActionPostMessage",
+    "shouldBe": "slack:CreateMessage",
+    "source": "validation_error",
+    "applied": true
+  },
+  {
+    "timestamp": "2026-03-16T12:01:04.545Z",
+    "module": "slack:CreateMessage",
+    "field": "version",
+    "was": 1,
+    "shouldBe": 4,
+    "source": "validation_error",
+    "applied": true
+  },
+  {
+    "timestamp": "2026-03-16T12:01:04.545Z",
+    "module": "slack:CreateMessage",
+    "field": "connection_type",
+    "was": null,
+    "shouldBe": "account:slack",
+    "source": "validation_error",
+    "applied": true
+  }
+]

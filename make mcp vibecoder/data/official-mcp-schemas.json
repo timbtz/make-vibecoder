@@ -529,11 +529,11 @@
     ]
   },
   "slack:CreateMessage": {
-    "name": "Send a Message",
+    "name": "Create a Message",
     "description": "Sends a message.",
     "type": "action",
     "app": "Slack",
-    "connection_type": "account:slack2,slack3",
+    "connection_type": "account:slack",
     "parameters": [
       {
         "name": "channel",
@@ -588,13 +588,30 @@
         "type": "text",
         "required": false,
         "label": "User name"
+      },
+      {
+        "name": "type",
+        "type": "select",
+        "required": true,
+        "label": "Where to send the message",
+        "options": [
+          "channel",
+          "group",
+          "im"
+        ]
+      },
+      {
+        "name": "channelId",
+        "type": "text",
+        "required": true,
+        "label": "Channel / User ID"
       }
     ],
     "output_fields": [
       {
         "name": "channel",
         "type": "text",
-        "label": "Channel"
+        "label": "Channel ID"
       },
       {
         "name": "username",
@@ -604,7 +621,7 @@
       {
         "name": "ts",
         "type": "text",
-        "label": "Timestamp"
+        "label": "Message ID (timestamp)"
       },
       {
         "name": "message",
